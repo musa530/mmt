@@ -49,7 +49,7 @@ class Input extends Component{
                         }}
                         returnKeyType={"search"}
                         autoCapitalize={"none"}
-                        autoFocus={'true'}
+                        autoFocus={false}
                         defaultValue={this.state.value}
                         keyboardType={'default'}
                         value={this.state.value}
