@@ -1,13 +1,8 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
+import {View, StyleSheet, Text, Image, Dimensions} from 'react-native';
 import Swiper from 'react-native-swiper';
 
-const BANNER = [
-    '',
-    '',
-    '',
-    ''
-]
+var {height, width} = Dimensions.get('window');
 
 export default class SwiperList extends Component{
     render() {
@@ -35,7 +30,7 @@ const styles = StyleSheet.create({
         bottom: 20,
     },
     imageStyle: {
-        width: 400,
+        width: width,
         height: 200,
         resizeMode: 'stretch'
     },

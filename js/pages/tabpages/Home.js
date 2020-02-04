@@ -9,6 +9,7 @@ import NewsSwiper from './homeCmps/NewsSwiper';
 import CommodityDisplay from './homeCmps/CommodityDisplay';
 import Add from './homeCmps/Add';
 
+var {height, width} = Dimensions.get('window');
 
 export default class Home extends Component{
     constructor(props){
@@ -46,10 +47,8 @@ const styles = StyleSheet.create({
       fontSize: 18
     },
     swiper_list: {
-        width: Dimensions.width,
+        width: width,
         height: 180,
         marginTop: -130,
-        marginRight: 10,
-        marginLeft: 10,
     },
 });

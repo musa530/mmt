@@ -37,13 +37,13 @@ export default class CategoryDemo extends Component {
     }
   
     renderNavBar() {//页面头部
-        return (
-          <View style={{height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red'}}>
-            <Text style={{marginTop: 5, color: 'white', fontSize: 18}}>分类</Text>
-          </View>
-        )
-      }
-    
+      return (
+        <View style={{height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red'}}>
+          <Text style={{marginTop: 5, color: 'white', fontSize: 18}}>分类</Text>
+        </View>
+      )
+    }
+  
       _renderItem = item => {//flatList之renderItem,以item 名称接受data数据
         let index = item.index
         let title = item.item.title
