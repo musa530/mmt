@@ -47,7 +47,6 @@ class Item extends Component{
 
 	
 	render(){
-		const {addCart} = this.state;
 		return(
 			<View style={styles.mallItem}>
 				<TouchableOpacity onPress={this.props.press}>
@@ -69,17 +68,6 @@ class Item extends Component{
 						style={{color: 'red'}}
 					/></TouchableOpacity>
 				</View>
-				{addCart?
-					<View style={{position: "absolute",bottom: 0, height: 300, width: width, backgroundColor: 'red'}}>
-						<Text>1234656</Text>
-						<Text>1234656</Text>
-						<Text>1234656</Text>
-						<Text>1234656</Text>
-						<Text>1234656</Text>
-						<Text>1234656</Text>
-					</View>
-					:null
-				}
 			</View>
 		);
 	}
