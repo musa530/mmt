@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, ScrollView, StyleSheet, TextInput, Text, Modal, TouchableOpacity, Alert} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Toast from '../AppNavigator/ToastDemo';
+import AsyncStorage from '../AppNavigator/AsyncStorage'
 
 var rootArr = ['火锅调料', 'VIVO', '华为', '好礼多', 'VIVO', '华为', 'VIVO', '华为', 'VIVO', '华为'];
 
@@ -24,17 +25,19 @@ export default class SearchPage extends Component{
 
     //删除历史搜索记录
     _delArrItem() {
-        if (!rootArr) {
-            Toast.show('历史记录已为空');
-        }
-        for (let i = rootArr.length; i >= 0; i--) {
-            rootArr.pop();
-        }
-        this.setState({
-            rootArr
-        })
-        Toast.show('删除成功');
-        
+        Alert.alert('删除搜索记录', '确定要删除搜索记录吗？',
+            [
+                {text: '确定', onPress: ()=>{
+                    for (let i = rootArr.length; i >= 0; i--) {
+                        rootArr.pop();
+                    }
+                    this.setState({
+                        rootArr
+                    })
+                }},
+                {text: '取消'}
+            ]
+        )
     }
 
     //历史和热门标签值赋值输入框
@@ -46,30 +49,6 @@ export default class SearchPage extends Component{
     _onFous(v) {
         if (v.nativeEvent.target) {
             this.setState({isPostList: false})
-        }
-    }
-
-    //删除历史搜索数据
-    _deleteHistory() {
-        // 判断是否有本地搜索历史
-        if (this.state.searchHistory.length > 0) {
-            Alert.alert(
-                '提示',
-                '确定清除所有历史搜索记录吗？',
-                [
-                    {text: '取消', onPress: () => console.log('取消'), style: 'cancel'},
-                    {
-                        text: '确定', onPress: () => {
-                            Toast.message('清除历史搜索记录成功')
-                            removeItem("searchHistory");
-                            this.setState({
-                                value: '',
-                                searchHistory: [],
-                            })
-                        }
-                    },
-                ]
-            )
         }
     }
 
@@ -90,47 +69,19 @@ export default class SearchPage extends Component{
     }
 
     //保存搜索标签
-    _insertSearch(newText) {
-        let text = newText.replace(/(^\s*)|(\s*$)/g, "")
-        if (!_.isEmpty(text)) {
-            if (this.state.searchHistory.indexOf(text) != -1) {
-                // 本地历史 已有 搜索内容
-                let index = this.state.searchHistory.indexOf(text);
-                let tempArr = arrDelete(this.state.searchHistory, index)
-                tempArr.unshift(text);
-                setItem("searchHistory", tempArr);
-            } else {
-                // 本地历史 无 搜索内容
-                let tempArr = this.state.searchHistory;
-                tempArr.unshift(text);
-                setItem("searchHistory", tempArr);
-            }
-        }
+    insertSearch(newText) {
     }
-
-    onChangeTextKeyword(Val) {   
-        let keys = {};
-        //输入的关键字去空格空字符
-        let newVal = Val.replace(/(^\s*)|(\s*$)/g, "")
-        if (!_.isEmpty(newVal)) {
-            keys = {
-                keyword: newVal
-            };
-            this.setState({isPostList: true})
-        } else {
-            Toast.show('请输入搜索关键字')
+    //关键字变化
+    onChangeTextKeyword(Val) {
+        if(!Val){
+            Toast.show('请输入关键字')
+        } else{
+            rootArr.unshift(Val.toString());
         }
-        this.setState({keyword: keys});
-
-        // rootArr.unshift(Val.toString());
-        // this.setState({
-        //     rootArr,
-        //     value: ''
-        // })
-    }
-
-    _setValues(item){
-        this.setState({value: item})
+        this.setState({
+            rootArr,
+            value: ''
+        })
     }
 
     render() {
@@ -148,7 +99,7 @@ export default class SearchPage extends Component{
                             //开始搜索
                             this.onChangeTextKeyword(this.state.value);
                             //保存搜索内容
-                            this._inserSearch(this.state.value);
+                            this.insertSearch(this.state.value);
                         }} 
                         onFocus={()=>{}}
                         returnKeyType={"search"}

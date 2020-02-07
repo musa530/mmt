@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import {Text, Image, View, TextInput} from 'react-native';
-import Swiper from '../homeCmps/Swiper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default class Search extends Component{
@@ -26,7 +25,7 @@ class Input extends Component{
 
     render(){
         return(
-            <View style={{flex: 1, backgroundColor: '#f40'}}>
+            <View style={{backgroundColor: '#f40'}}>
                 <View style={{flexDirection: 'row', alignItems: 'center',backgroundColor: 'white', marginRight:5, marginLeft:5, borderRadius: 8,bottom: 3}}>
                     <Ionicons
                         name={'ios-search'}
@@ -54,10 +53,6 @@ class Input extends Component{
                         keyboardType={'default'}
                         value={this.state.value}
                     />
-                </View>
-                
-                <View style={{height: 200,}}>
-                    <Swiper/>
                 </View>
             </View>
         );

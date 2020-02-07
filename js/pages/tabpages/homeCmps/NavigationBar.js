@@ -20,7 +20,7 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                title: '折扣专区'
+                                topTitle: '折扣专区'
                             }, "DetailPage")
                         }}
                     >
@@ -36,7 +36,7 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                title: '限时秒杀'
+                                topTitle: '限时秒杀'
                             }, "DetailPage")
                         }}
                     >
@@ -51,7 +51,7 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                title: '神券专区'
+                                topTitle: '神券专区'
                             }, "DetailPage")
                         }}    
                     >
@@ -67,7 +67,7 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                title: '自营专区'
+                                topTitle: '自营专区'
                             }, "DetailPage")
                         }}
                     >
@@ -83,7 +83,7 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                title: '会员中心'
+                                topTitle: '会员中心'
                             }, "DetailPage")
                         }}
                     >

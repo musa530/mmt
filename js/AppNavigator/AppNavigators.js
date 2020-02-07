@@ -25,7 +25,6 @@ const MainNvigator = createStackNavigator({
     DetailPage: {
         screen: DetailPage,
         navigationOptions: {
-            title: ''
         }
     },
     SearchPage: {

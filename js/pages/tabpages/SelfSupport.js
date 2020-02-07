@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity, TouchableHighlight} from 'react-native';
 import Search from './SelfSupportCpms/Search';
+import Swiper from '../tabpages/homeCmps/Swiper';
 
 
 export default class SelfSupport extends Component{
@@ -50,6 +51,9 @@ export default class SelfSupport extends Component{
             <View style={styles.container}>
                 {this.renderNavBar()}
                 <Search/>
+                <View style={{height: 200}}>
+                    <Swiper height={200}/>
+                </View>
             </View>
         );
     }
@@ -58,6 +62,7 @@ export default class SelfSupport extends Component{
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: '#f40'
     },
     welcome: {
       color: '#333',

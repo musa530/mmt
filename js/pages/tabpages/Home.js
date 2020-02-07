@@ -23,7 +23,7 @@ export default class Home extends Component{
                     <Circle/>
                     <TopSreach/>
                     <View style={styles.swiper_list}>
-                        <SwiperList/>
+                        <SwiperList height={180}/>
                     </View>
                     <DynamicPic/>
                     <NavigationBar/>

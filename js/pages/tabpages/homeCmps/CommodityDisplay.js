@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, TouchableOpacity, Image, Text, Dimensions} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import NavigationUtil from '../../../AppNavigator/NavigationUtil';
 
 const {height, width} = Dimensions.get('window');
 var helfWidth = Dimensions.get('window').width/2;
@@ -10,22 +11,22 @@ var Goods = [
 	{
 		title: '本色集卷纸本色集卷纸本色集卷纸 12卷一提',
 		url: require('../../../../assest/images/mall/mall1.jpg'),
-		price: 19.8
+		price: '19.8'
 	},
 	{
 		title: '百岁山矿产水多样微量元素矿物质水 570ml',
 		url: require('../../../../assest/images/mall/mall2.jpg'),
-		price: 4.00
+		price: '4.00'
 	},
 	{
 		title: '洽洽香瓜子葵花子零食五香恰恰瓜子 160g',
 		url: require('../../../../assest/images/mall/mall3.jpg'),
-		price: 6.50
+		price: '6.50'
 	},
 	{
 		title: '品品Q豆干 Q弹豆腐干 烧烤味 烧烤味 105g',
 		url: require('../../../../assest/images/mall/mall4.png'),
-		price: 4.95
+		price: '4.95'
 	},
 ];
 
@@ -109,7 +110,12 @@ class List extends Component{
 	}
 	
 	press(data) {
-		alert("您选择了："+data.title);
+		// alert("您选择了："+data.title);
+		NavigationUtil.goPage({
+			navigation: this.props.navigation,
+			topTitle: '商品',
+			data: {...data},
+		}, "DetailPage")
 	}
 }
 
