@@ -4,7 +4,9 @@ import Login from '../pages/Login';
 import HomePage from '../pages/HomePage';
 import DetailPage from '../pages/DetailPage';
 import SearchPage from '../pages/SearchPage';
+import ActivePage from '../pages/ActivePage';
 import Category from '../pages/tabpages/Category';
+const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
 
 const InitNvigator = createStackNavigator({
     Login: {
@@ -25,6 +27,26 @@ const MainNvigator = createStackNavigator({
     DetailPage: {
         screen: DetailPage,
         navigationOptions: {
+        }
+    },
+    ActivePage: {
+        screen: ActivePage,
+        navigationOptions: {
+            headerTintColor: 'white',//返回图标和文字的颜色
+            headerStyle: {
+                backgroundColor: '#E31E3D',
+            },
+            headerTitleStyle: {
+                flex: 1,
+                alignSelf: 'center',
+                textAlign: 'center'
+            },
+            headerTitleContainerStyle: {
+                left: TITLE_OFFSET,
+                right: TITLE_OFFSET,
+            },
+            gestureDirection: 'horizontal',
+            gestureEnabled: true,
         }
     },
     SearchPage: {

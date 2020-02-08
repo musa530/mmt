@@ -8,6 +8,7 @@ import NavigationBar from './homeCmps/NavigationBar';
 import NewsSwiper from './homeCmps/NewsSwiper';
 import CommodityDisplay from './homeCmps/CommodityDisplay';
 import Add from './homeCmps/Add';
+import EmpityBox from '../EmpityBox';
 
 var {height, width} = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ export default class Home extends Component{
                     <Add/>
                     <CommodityDisplay title={'热门推荐'}/>
                     <CommodityDisplay title={'销量排行'}/>
+                    <EmpityBox/>
                 </View>
             </ScrollView>
         );

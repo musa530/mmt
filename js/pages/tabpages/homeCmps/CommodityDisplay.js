@@ -9,22 +9,22 @@ var itemWidth = helfWidth -10;
 var imgWidth = helfWidth - 12;
 var Goods = [
 	{
-		title: '本色集卷纸本色集卷纸本色集卷纸 12卷一提',
+		title: '本色集卷纸本色集卷纸本色集卷纸本色集卷纸本色集卷纸本色集卷纸 12卷一提',
 		url: require('../../../../assest/images/mall/mall1.jpg'),
-		price: '19.8'
+		price: '19.80'
 	},
 	{
-		title: '百岁山矿产水多样微量元素矿物质水 570ml',
+		title: '百岁山矿产水多样微量元素矿物质水百岁山矿产水多样微量元素矿物质水 570ml',
 		url: require('../../../../assest/images/mall/mall2.jpg'),
 		price: '4.00'
 	},
 	{
-		title: '洽洽香瓜子葵花子零食五香恰恰瓜子 160g',
+		title: '洽洽香瓜子葵花子零食五香恰恰瓜子洽洽香瓜子葵花子零食五香恰恰瓜子 160g',
 		url: require('../../../../assest/images/mall/mall3.jpg'),
 		price: '6.50'
 	},
 	{
-		title: '品品Q豆干 Q弹豆腐干 烧烤味 烧烤味 105g',
+		title: '品品Q豆干 Q弹豆腐干 烧烤味 烧烤味品品Q豆干 Q弹豆腐干 烧烤味 烧烤味 105g',
 		url: require('../../../../assest/images/mall/mall4.png'),
 		price: '4.95'
 	},
@@ -55,11 +55,11 @@ class Item extends Component{
 					   source={this.props.url}
 					   resizeMode="stretch"
 					/>
-					<Text style={{fontSize: 14, marginTop: 5,marginBottom: 3, color: '#555'}}
+					<Text style={{fontSize: 14, marginTop: 5,marginBottom: 3, color: '#666'}}
 						numberOfLines={2}
 					>{this.props.title}</Text>
 				</TouchableOpacity>
-				<View style={{flexDirection:'row',backgroundColor: '#eee', justifyContent:'space-between', paddingRight: 5}}>
+				<View style={{flexDirection:'row', justifyContent:'space-between', paddingRight: 5}}>
 					<Text style={styles.mallPrice}>￥ {this.props.price}</Text>
 					<TouchableOpacity
 						onPress={()=>this.press()}
@@ -165,9 +165,10 @@ const styles = StyleSheet.create({
     mallItem: {
 		position: 'relative',
         width: itemWidth,
-        borderColor: '#eee',
+		backgroundColor: '#eee',
+		borderColor: '#cdcdcd',
         borderWidth: 1,
-        marginTop: 5,
+        marginTop: 1,
         paddingBottom: 3
     },
     mallImg: {

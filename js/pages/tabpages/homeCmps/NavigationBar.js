@@ -21,7 +21,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '折扣专区'
-                            }, "DetailPage")
+                            }, "ActivePage")
                         }}
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/zhekou.png')}/>
@@ -37,7 +37,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '限时秒杀'
-                            }, "DetailPage")
+                            }, "ActivePage")
                         }}
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/miaosha.png')}/>
@@ -52,7 +52,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '神券专区'
-                            }, "DetailPage")
+                            }, "ActivePage")
                         }}    
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/quan.png')}/>
@@ -68,7 +68,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '自营专区'
-                            }, "DetailPage")
+                            }, "ActivePage")
                         }}
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/self.png')}/>
@@ -84,7 +84,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '会员中心'
-                            }, "DetailPage")
+                            }, "ActivePage")
                         }}
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/huiyuan.png')}/>
