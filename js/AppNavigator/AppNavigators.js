@@ -45,7 +45,6 @@ const MainNvigator = createStackNavigator({
                 left: TITLE_OFFSET,
                 right: TITLE_OFFSET,
             },
-            gestureDirection: 'horizontal',
             gestureEnabled: true,
         }
     },
