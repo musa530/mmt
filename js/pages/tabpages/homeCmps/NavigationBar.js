@@ -68,7 +68,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '自营专区'
-                            }, "ActivePage")
+                            }, "SelfSupport")
                         }}
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/self.png')}/>

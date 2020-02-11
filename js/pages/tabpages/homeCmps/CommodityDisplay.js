@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     mallItem: {
 		position: 'relative',
         width: itemWidth,
-		backgroundColor: '#eee',
+		backgroundColor: '#f5f5f5',
 		borderColor: '#cdcdcd',
         borderWidth: 1,
         marginTop: 1,

@@ -46,10 +46,10 @@ export default class DetailPage extends Component{
                 <View style={{marginBottom: 10}}>
                     <Text style={{fontSize: 22}}>￥{price}</Text>
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginBottom: 3}}>
-                    <Text style={{color: '#666'}}>快递：{this.state.expressFee}</Text>
-                    <Text style={{color: '#666'}}>月销{this.state.monthSeles}</Text>
-                    <Text style={{color: '#666'}}>{this.state.address}</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3}}>
+                    <Text style={{color: '#666', fontSize: 13}}>快递：{this.state.expressFee}</Text>
+                    <Text style={{color: '#666', fontSize: 13}}>月销{this.state.monthSeles}</Text>
+                    <Text style={{color: '#666', fontSize: 13}}>{this.state.address}</Text>
                 </View>
             </View>
         );
@@ -192,18 +192,18 @@ export default class DetailPage extends Component{
                 <View style={{height: 60, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center'}}>
                     <Text style={{fontSize: 18, color: '#fff'}}>商品详细</Text>
                 </View>
-                <Image source={{uri: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2609784341,3461158936&fm=26&gp=0.jpg'}}
-                    style={{width: width, height: width, resizeMode: 'stretch'}}
+                <Image source={{uri: 'https://satarmen.com/uploads/home/store/goods/554/554_2019122712562410694.png'}}
+                    style={{width: width, height: 1600, resizeMode: 'stretch'}}
                 />
-                <Image source={{uri: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=186611946,905648253&fm=26&gp=0.jpg'}}
+                {/* <Image source={{uri: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=186611946,905648253&fm=26&gp=0.jpg'}}
                     style={{width: width, height: width, resizeMode: 'stretch'}}
                 />
                 <Image source={{uri: 'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=129639009,1876542785&fm=26&gp=0.jpg'}}
                     style={{width: width, height: width, resizeMode: 'stretch'}}
                 />
                 <Image source={{uri: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1017050554,3701300423&fm=26&gp=0.jpg'}}
-                    style={{width: width, height: width, resizeMode: 'stretch'}}
-                />
+                    style={{width: width, height: width, resizeMode: 'stretch'}} 
+                />*/}
             </View>
         );
     }

@@ -25,15 +25,15 @@ class Input extends Component{
 
     render(){
         return(
-            <View style={{backgroundColor: '#f40'}}>
-                <View style={{flexDirection: 'row', alignItems: 'center',backgroundColor: 'white', marginRight:5, marginLeft:5, borderRadius: 8,bottom: 3}}>
+            <View style={{backgroundColor: '#eee'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center',backgroundColor: 'white', marginRight:5, marginLeft:5, borderRadius:30}}>
                     <Ionicons
                         name={'ios-search'}
                         size={22}
                         style={{color: '#999',paddingLeft: 8}}
                     />
                     <TextInput
-                        style={{height: 40, borderRadius: 16, borderColor: 'black', flex: 1}}
+                        style={{height: 40,flex: 1}}
                         placeholder={this.state.placeholder}
                         onChangeText={text=>this.setState({
                             value: text
