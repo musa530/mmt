@@ -8,6 +8,8 @@ import ActivePage from '../pages/ActivePage';
 import Category from '../pages/tabpages/Category';
 import SelfSupport from '../pages/tabpages/SelfSupport';
 import ModalDemo from '../pages/ModalDemo';
+import AllEvaluate from '../pages/AllEvaluate';
+import MemberCenter from '../pages/MemberCenter';
 const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
 
 const InitNvigator = createStackNavigator({
@@ -47,7 +49,6 @@ const MainNvigator = createStackNavigator({
                 left: TITLE_OFFSET,
                 right: TITLE_OFFSET,
             },
-            gestureEnabled: true,
         }
     },
     SearchPage: {
@@ -72,6 +73,29 @@ const MainNvigator = createStackNavigator({
         screen: ModalDemo,
         navigationOptions: {
             headerShown: false
+        }
+    },
+    AllEvaluate: {
+        screen: AllEvaluate,
+        navigationOptions: {
+        }
+    },
+    MemberCenter: {
+        screen: MemberCenter,
+        navigationOptions: {
+            headerTintColor: 'white',//返回图标和文字的颜色
+            headerStyle: {
+                backgroundColor: '#E31E3D',
+            },
+            headerTitleStyle: {
+                flex: 1,
+                alignSelf: 'center',
+                textAlign: 'center'
+            },
+            headerTitleContainerStyle: {
+                left: TITLE_OFFSET,
+                right: TITLE_OFFSET,
+            },
         }
     },
 });

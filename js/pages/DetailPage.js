@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Modal} from 'react-native';
 import Swiper from './tabpages/homeCmps/Swiper';
+import Toast from '../AppNavigator/ToastDemo';
+import NavigationUtil from '../AppNavigator/NavigationUtil';
 import EmpityBox from './EmpityBox';
 
 const {width, height} = Dimensions.get('window');
 const titleWidth = width/5 * 4.5;
-const modalHeight = height/3 * 2;
+const modalHeight = height/3 * 1.5;
 const cencle = modalHeight - 55;
+const buttonWidth = width/2 - 5;
 
 export default class DetailPage extends Component{
     constructor(props){
@@ -24,9 +27,13 @@ export default class DetailPage extends Component{
             animationType: 'slide',//none slide fade
             modalVisible: false,//模态场景是否可见
             transparent: true,//是否透明显示
+            price: 19.80, //商品价格
+            kucun: 9, //库存
+            mallCouont: 1, //商品数量
         }
     }
 
+    //设置页眉
     static navigationOptions = ({ navigation }) => ({
         title: `${navigation.state.params.topTitle}`
     });
@@ -160,7 +167,13 @@ export default class DetailPage extends Component{
                 <View style={{arginBottom: 5}}>
                     <Text style={{color: '#cdcdcd', fontSize: 13}} numberOfLines={1}>颜色分类: {this.state.selected}</Text>
                 </View>
-                <TouchableOpacity style={{alignItems: 'center', margin: 8}}>
+                <TouchableOpacity style={{alignItems: 'center', margin: 8}}
+                    onPress={()=>{
+                        NavigationUtil.goPage({
+                            navigation: this.props.navigation
+                        }, "AllEvaluate")
+                    }}
+                >
                     <Text style={{padding: 5, backgroundColor:'#8a8a8a', color: 'white'}}>查看全部评价</Text>
                 </TouchableOpacity>
             </View>
@@ -220,6 +233,31 @@ export default class DetailPage extends Component{
         this.setState({ modalVisible: visible });
     }
 
+    //商品数量增加
+    addCount=(count)=>{
+        //点击之后数量增加
+        count++;
+
+        //数量变化界面渲染
+        this.setState({
+            mallCouont: count
+        })
+    }
+
+    //商品数量减少
+    subCount=(count)=>{
+        //判断count最少值
+        if (count>1) {
+            //点击之后数量减少
+            count--;
+        }
+
+        //商品数量变化界面渲染
+        this.setState({
+            mallCouont: count
+        })
+    }
+
     render() {
         const {navigation} = this.props;
         const {state, setParams} = navigation;
@@ -233,6 +271,10 @@ export default class DetailPage extends Component{
         let innerContainerTransparentStyle = this.state.transparent
         ? { backgroundColor: '#fff', padding: 5 }
         : null;
+
+        let paddingLR = {
+            paddingLeft: 12, paddingRight: 12
+        }
 
         return(
             <View style={styles.container}>
@@ -254,17 +296,68 @@ export default class DetailPage extends Component{
                     >
                         <View style={[styles.modalContainer, modalBackgroundStyle]}>
                             <View style={[styles.modalInnerContainer, innerContainerTransparentStyle]}>
-                                <TouchableOpacity
-                                    onPress={()=>{
-                                        this._setModalVisible(false)
-                                    }}
-                                    style={{backgroundColor: '#f49', padding: 3, alignItems: 'center',top: cencle, borderRadius: 16}}
-                                >
-                                    <Text style={{fontSize:20, color: 'white'}}>
-                                        取消
-                                    </Text>
-                                </TouchableOpacity>
-                            
+                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                    <TouchableOpacity
+                                        onPress={()=>{
+                                            this._setModalVisible(false)
+                                        }}
+                                        style={{backgroundColor: '#eee', padding: 3,borderRadius: 999, top: -25, width: 40, height: 40,
+                                            justifyContent: 'center', alignItems: 'center'
+                                        }}
+                                    >
+                                        <Text style={{fontSize:20, color: '#f03', fontWeight: 'bold'}}>
+                                            X
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{flexDirection: 'row'}}>
+                                    <Image
+                                        style={{width: 100, height: 100, resizeMode: 'stretch', borderWidth: 1, borderColor: '#eee'}}
+                                        source={{uri: 'https://satarmen.com/uploads/home/store/goods/1/1_2019081619260225812.jpg'}}
+                                    />
+                                    <View style={{justifyContent: 'center', marginLeft: 15}}>
+                                        <View style={{marginBottom: 30, flexDirection: 'row'}}>
+                                            <Text style={{fontSize: 18}}>价格: ￥</Text>
+                                            <Text style={{fontSize: 18, color: '#f00'}}>{this.state.price}</Text>
+                                        </View>
+                                        <Text style={{color: '#666'}}>库存：{this.state.kucun}件</Text>
+                                    </View>
+                                </View>
+                                <View>
+                                    <Text style={{color:'#666',margin: 8, fontSize: 16}}>图片联动：</Text>
+                                    <Text style={{color:'#666',margin: 8, fontSize: 16}}>层数/卷数：</Text>
+                                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                        <Text style={{color:'#666',margin: 8, fontSize: 16, flex: 1}}>数量：</Text>
+                                        <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
+                                            onPress={()=>{
+                                                this.subCount(this.state.mallCouont)
+                                            }}
+                                        >
+                                            <Text style={{fontSize: 16}}>-</Text>
+                                        </TouchableOpacity>
+                                        <View style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}>
+                                            <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.mallCouont}</Text>
+                                        </View>
+                                        <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
+                                            onPress={()=>{
+                                                this.addCount(this.state.mallCouont)
+                                            }}
+                                        >
+                                            <Text style={{fontSize: 16}}>+</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                
+
+                                <View style={{flexDirection: 'row', marginTop: 20}}>
+                                    <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#3CB371'}}>
+                                        <Text style={{color: '#fff', fontSize: 18, padding: 10}}>加入购物车</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#E31E3D'}}>
+                                        <Text style={{color: '#fff', fontSize: 18, padding: 10}}>立即购买</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </Modal>

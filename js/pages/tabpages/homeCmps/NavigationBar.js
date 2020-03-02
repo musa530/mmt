@@ -84,7 +84,7 @@ export default class NavigationBar extends Component{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
                                 topTitle: '会员中心'
-                            }, "ActivePage")
+                            }, "MemberCenter")
                         }}
                     >
                         <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/huiyuan.png')}/>
