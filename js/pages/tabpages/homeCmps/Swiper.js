@@ -14,7 +14,6 @@ export default class SwiperList extends Component{
 
     render() {
         var swiperHeight = this.props.height;
-        console.log(swiperHeight)
         return (
             <Swiper style={styles.wrapper}
                 autoplay={'true'}

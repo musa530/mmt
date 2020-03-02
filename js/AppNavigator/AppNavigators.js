@@ -7,6 +7,7 @@ import SearchPage from '../pages/SearchPage';
 import ActivePage from '../pages/ActivePage';
 import Category from '../pages/tabpages/Category';
 import SelfSupport from '../pages/tabpages/SelfSupport';
+import ModalDemo from '../pages/ModalDemo';
 const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
 
 const InitNvigator = createStackNavigator({
@@ -63,6 +64,12 @@ const MainNvigator = createStackNavigator({
     },
     SelfSupport: {
         screen: SelfSupport,
+        navigationOptions: {
+            headerShown: false
+        }
+    },
+    ModalDemo: {
+        screen: ModalDemo,
         navigationOptions: {
             headerShown: false
         }

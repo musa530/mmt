@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, ScrollView, Button} from 'react-native';
 import SwiperList from './homeCmps/Swiper';
 import Circle from './homeCmps/Circle';
 import TopSreach from './homeCmps/TopSreach';
@@ -9,6 +9,7 @@ import NewsSwiper from './homeCmps/NewsSwiper';
 import CommodityDisplay from './homeCmps/CommodityDisplay';
 import Add from './homeCmps/Add';
 import EmpityBox from '../EmpityBox';
+import NavigationUtil from '../../AppNavigator/NavigationUtil';
 
 var {height, width} = Dimensions.get('window');
 
@@ -32,6 +33,15 @@ export default class Home extends Component{
                     <Add/>
                     <CommodityDisplay title={'热门推荐'}/>
                     <CommodityDisplay title={'销量排行'}/>
+                    {/* modal模板的调试按钮
+                        <Button
+                            title={'go to ModalDemoPage'}
+                            onPress={()=>{
+                            NavigationUtil.goPage({
+                                navigation: this.props.navigation
+                            }, "ModalDemo")
+                        }}
+                    /> */}
                     <EmpityBox/>
                 </View>
             </ScrollView>

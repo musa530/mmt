@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Modal} from 'react-native';
 import Swiper from './tabpages/homeCmps/Swiper';
 import EmpityBox from './EmpityBox';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const {width, height} = Dimensions.get('window');
 const titleWidth = width/5 * 4.5;
+const modalHeight = height/3 * 2;
+const cencle = modalHeight - 55;
 
 export default class DetailPage extends Component{
     constructor(props){
@@ -19,7 +20,10 @@ export default class DetailPage extends Component{
             userName: 'r***2',
             shopName: '雪山果园旗舰店',
             evaluateText:'宝贝收到了，很喜欢，物流快，包装很严谨，没有破损摔坏情况，很满意！卖家服务到位，服务态度好，很热情！良心商家，推荐推荐推荐！',
-            selected: '高 梦幻蓝咖啡杯碟'
+            selected: '高 梦幻蓝咖啡杯碟',
+            animationType: 'slide',//none slide fade
+            modalVisible: false,//模态场景是否可见
+            transparent: true,//是否透明显示
         }
     }
 
@@ -28,7 +32,6 @@ export default class DetailPage extends Component{
     });
     componentDidMount() {
         let topTitle = this.props.navigation.state.params.topTitle;
-        // console.log(this.props.navigation.state.params);
     }
 
     renderTitle=(title, price) => {//商品标题价格快递月销地址
@@ -125,7 +128,11 @@ export default class DetailPage extends Component{
 
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5}}>
                     <Text style={{fontSize: 16}}>选择 颜色分类</Text>
-                    <TouchableOpacity style={{justifyContent: 'center'}}>
+                    <TouchableOpacity style={{justifyContent: 'center'}}
+                        onPress={()=>{
+                            this._setModalVisible(true)
+                        }}
+                    >
                         <Image source={require('../../assest/images/more.png')}
                             style={{
                                 width: 30,height: 30, marginRight: 6
@@ -208,12 +215,25 @@ export default class DetailPage extends Component{
         );
     }
 
+    //判断modal是否显示
+    _setModalVisible = (visible) => {
+        this.setState({ modalVisible: visible });
+    }
+
     render() {
         const {navigation} = this.props;
         const {state, setParams} = navigation;
         const {params} = state;
         const title = params.data.title;
         const price = params.data.price;
+
+        let modalBackgroundStyle = {
+            backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : 'red',
+          };
+        let innerContainerTransparentStyle = this.state.transparent
+        ? { backgroundColor: '#fff', padding: 5 }
+        : null;
+
         return(
             <View style={styles.container}>
                 <ScrollView>
@@ -226,6 +246,28 @@ export default class DetailPage extends Component{
                     {this.renderEvaluate()}
                     {this.renderShopInfo()}
                     {this.renderDisplay()}
+                    <Modal
+                        animationType={this.state.animationType}
+                        transparent={this.state.transparent}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => { this._setModalVisible(false) } }
+                    >
+                        <View style={[styles.modalContainer, modalBackgroundStyle]}>
+                            <View style={[styles.modalInnerContainer, innerContainerTransparentStyle]}>
+                                <TouchableOpacity
+                                    onPress={()=>{
+                                        this._setModalVisible(false)
+                                    }}
+                                    style={{backgroundColor: '#f49', padding: 3, alignItems: 'center',top: cencle, borderRadius: 16}}
+                                >
+                                    <Text style={{fontSize:20, color: 'white'}}>
+                                        取消
+                                    </Text>
+                                </TouchableOpacity>
+                            
+                            </View>
+                        </View>
+                    </Modal>
                     <EmpityBox/>
                 </ScrollView>
             </View>
@@ -253,5 +295,13 @@ const styles = StyleSheet.create({
     partOneItem: {
         justifyContent:'space-evenly',
         marginRight: 10
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'flex-end'
+    },
+    modalInnerContainer: {
+        height: modalHeight,
+        width: width
     }
 });
