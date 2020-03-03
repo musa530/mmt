@@ -56,7 +56,7 @@ export default class AllEvaluate extends Component{
             <View style={{flex: 1, backgroundColor: '#fff', padding: 5}}>
                 <ScrollView>
                     {this.renderEvaluate()}
-                    <CommodityDisplay title={'您可能需要'}/>
+                    <CommodityDisplay title={'您可能想要'}/>
                     <EmpityBox/>
                 </ScrollView>
             </View>

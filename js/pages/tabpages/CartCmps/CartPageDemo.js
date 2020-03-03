@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, Dimensions, ScrollView, Image} from 'react-native';
 import CommodityDisplay from '../homeCmps/CommodityDisplay';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const {width, height} = Dimensions.get('window');
 const imgWidth = width/2;
@@ -40,7 +41,11 @@ class Empity extends Component{
                  {this.renderNavBar()}
                 <ScrollView style={styles.scroll}>
                     <View style={styles.content}>
-                        <Image source={require('../../../../assest/images/empity.png')} style={styles.img} />
+                        <FontAwesome5
+                            name={'inbox'}
+                            size={60}
+                            style={{color: '#F83150', marginBottom: 15}}
+                        />
                         <Text style={{fontSize: 16, color:'#666'}}>{this.state.empity_text}</Text>
                     </View>
                     <CommodityDisplay title={'可能您想要'}/>
@@ -63,6 +68,7 @@ const styles = StyleSheet.create({
         padding: 40,
         borderBottomColor: '#cdcdcd',
         borderBottomWidth: 1,
+        marginTop: 100,
         marginLeft: 10,
         marginRight: 10,
         marginBottom: 20

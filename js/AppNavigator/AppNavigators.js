@@ -10,6 +10,7 @@ import SelfSupport from '../pages/tabpages/SelfSupport';
 import ModalDemo from '../pages/ModalDemo';
 import AllEvaluate from '../pages/AllEvaluate';
 import MemberCenter from '../pages/MemberCenter';
+import MyJifen from '../pages/tabpages/ProfileCmps/MyJifen';
 const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
 
 const InitNvigator = createStackNavigator({
@@ -22,18 +23,18 @@ const InitNvigator = createStackNavigator({
 });
 
 const MainNvigator = createStackNavigator({
-    HomePage: {
+    HomePage: {//首页
         screen: HomePage,
         navigationOptions: {
             headerShown: false,
         }
     },
-    DetailPage: {
+    DetailPage: {//商品详情页
         screen: DetailPage,
         navigationOptions: {
         }
     },
-    ActivePage: {
+    ActivePage: {//首页活动页面
         screen: ActivePage,
         navigationOptions: {
             headerTintColor: 'white',//返回图标和文字的颜色
@@ -51,37 +52,55 @@ const MainNvigator = createStackNavigator({
             },
         }
     },
-    SearchPage: {
+    SearchPage: {//搜索页面
         screen: SearchPage,
         navigationOptions: {
             headerShown: false
         }
     },
-    Category: {
+    Category: {//分类页面
         screen: Category,
         navigationOptions: {
             headerShown: false
         }
     },
-    SelfSupport: {
+    SelfSupport: {//自营超市
         screen: SelfSupport,
         navigationOptions: {
             headerShown: false
         }
     },
-    ModalDemo: {
+    ModalDemo: {//模板案例
         screen: ModalDemo,
         navigationOptions: {
             headerShown: false
         }
     },
-    AllEvaluate: {
+    AllEvaluate: {//全部评论
         screen: AllEvaluate,
         navigationOptions: {
         }
     },
-    MemberCenter: {
+    MemberCenter: {//会员中心
         screen: MemberCenter,
+        navigationOptions: {
+            headerTintColor: 'white',//返回图标和文字的颜色
+            headerStyle: {
+                backgroundColor: '#E31E3D',
+            },
+            headerTitleStyle: {
+                flex: 1,
+                alignSelf: 'center',
+                textAlign: 'center'
+            },
+            headerTitleContainerStyle: {
+                left: TITLE_OFFSET,
+                right: TITLE_OFFSET,
+            },
+        }
+    },
+    MyJifen: {//我的积分
+        screen: MyJifen,
         navigationOptions: {
             headerTintColor: 'white',//返回图标和文字的颜色
             headerStyle: {

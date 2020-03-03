@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import Circle from './homeCmps/Circle';
+import NavigationUtil from '../../AppNavigator/NavigationUtil';
 
 const {width, height} = Dimensions.get('window');
 const settingIcon = width - 40;
@@ -80,13 +81,15 @@ class ProfileCmps extends Component {
                 <View style={{flexDirection: 'row', justifyContent: 'space-around', padding: 5}}>
                     <TouchableOpacity
                         onPress={() =>{
-                            alert(`预存款￥${this.state.money}`)
+                            Alert.alert('预存款明细',`您的预存款为￥${this.state.money}`)
                         }}
                     >
                     <Text style={{fontSize: 16, padding: 5}}>预存款￥{this.state.money}</Text></TouchableOpacity>
                     <TouchableOpacity
                         onPress={() =>{
-                            alert('会员中心')
+                            NavigationUtil.goPage({
+                                navigation: this.props.navigation
+                            }, "MemberCenter")
                         }}
                     >
                     <Text style={{fontSize: 16, padding: 5}}>会员中心</Text></TouchableOpacity>
@@ -94,7 +97,9 @@ class ProfileCmps extends Component {
                 <View style={{flexDirection: 'row', justifyContent: 'space-evenly', paddingTop: 5, paddingBottom: 15}}>
                     <TouchableOpacity
                         onPress={() =>{
-                            alert('我的积分')
+                            NavigationUtil.goPage({
+                                navigation: this.props.navigation
+                            }, "MyJifen")
                         }}
                     >
                     <View style={{alignItems: 'center'}}>

@@ -10,11 +10,11 @@ export default class MemberCenter extends Component{
     constructor(props){
         super(props);
         this.state={
-            jifen: 120,
+            jifen: 1120,
             yucunkuan: '10.00',
             memberLevel: '普通会员',
             isColor: true,
-            mallName: 'this is default mall Name!',
+            mallName: 'this is default mall name!',
             mallPrice: '11.00', 
             mallJifen: 175000
         }
@@ -24,7 +24,7 @@ export default class MemberCenter extends Component{
         title: '会员中心'
     });
 
-    change=(color)=>{//改变渲染排版
+    change=(color)=>{//改变渲染排版样式
         this.setState({
             isColor: !color
         })
@@ -77,9 +77,11 @@ export default class MemberCenter extends Component{
                         source={{uri: 'https://satarmen.com/uploads/home/store/goods/1/1_2019081619260225812.jpg'}}
                         style={{width: imageWidth, height: imageWidth}}
                     />
-                    <Text numberOfLines={2}
-                        style={{fontSize: 18, color: '#666'}}
-                    >{this.state.mallName}</Text>
+                    <View style={{marginTop: 3, marginBottom: 3}}>
+                        <Text numberOfLines={2}
+                            style={{fontSize: 16, color: '#666'}}
+                        >{this.state.mallName}</Text>
+                    </View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between',padding: 5, backgroundColor: '#eee'}}>
                         <Text style={{color: '#F83150', fontSize: 16}}>{this.state.mallJifen}分</Text>
                         <Text style={{color: '#666', fontSize: 16}}>￥{this.state.mallPrice}</Text>
@@ -102,8 +104,10 @@ export default class MemberCenter extends Component{
                                 style={{width: imgWdith, height: imgWdith}}
                             />
                     </View>
-                    <View style={{marginLeft: 10}}>
-                        <Text style={{color: '#F83150', marginBottom: 35, fontSize: 16}}>{this.state.mallName}</Text>
+                    <View style={{marginLeft: 10, flex: 1}}>
+                        <Text style={{color: '#F83150', marginBottom: 35, fontSize: 16}}
+                            numberOfLines={2}
+                        >{this.state.mallName}</Text>
                         <View style={{flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#eee', padding: 5}}>
                             <Text style={{color: '#f83150'}}>{this.state.mallJifen}分</Text>
                             <Text>{this.state.mallPrice}￥</Text>
@@ -148,6 +152,7 @@ export default class MemberCenter extends Component{
                         onPress={()=>{
                             this.change(this.state.isColor)
                         }}
+                        style={{marginRight: 5}}
                     >
                         {isColor?
                             <Foundation

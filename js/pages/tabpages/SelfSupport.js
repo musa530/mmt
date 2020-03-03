@@ -92,6 +92,18 @@ export default class SelfSupport extends Component{
         );
     }
 
+    renderHotItem(){//热门推荐单个商品展示
+        return(
+            <View style={{alignItems: 'center'}}>
+                <View style={{width: couponWidth, height: 80, backgroundColor: '#ccc', margin: 5}}></View>
+                <Text>{this.state.hotMallName}</Text>
+                <View style={{backgroundColor: '#e31e3d', paddingRight: 15, paddingLeft: 15, marginTop: 5, borderRadius: 16}}>
+                    <Text style={{color: '#fff', padding: 3}}>爆款直降</Text>
+                </View>
+            </View>
+        );
+    }
+
     renderHot() {//热门推荐
         return(
             <View style={{backgroundColor: '#fff', padding: 5, marginTop: 10, paddingTop: 10, paddingBottom: 15}}>
@@ -107,37 +119,13 @@ export default class SelfSupport extends Component{
                 <ScrollView
                     horizontal={true}
                 >
-                    <View style={{alignItems: 'center'}}>
-                        <View style={{width: couponWidth, height: 80, backgroundColor: '#ccc', margin: 5}}></View>
-                        <Text>{this.state.hotMallName}</Text>
-                        <View style={{backgroundColor: '#e31e3d', paddingRight: 15, paddingLeft: 15, marginTop: 5, borderRadius: 16}}>
-                            <Text style={{color: '#fff', padding: 3}}>爆款直降</Text>
-                        </View>
-                    </View>
-
-                    <View style={{alignItems: 'center'}}>
-                        <View style={{width: couponWidth, height: 80, backgroundColor: '#ccc', margin: 5}}></View>
-                        <Text>{this.state.hotMallName}</Text>
-                        <View style={{backgroundColor: '#e31e3d', paddingRight: 15, paddingLeft: 15, marginTop: 5, borderRadius: 16}}>
-                            <Text style={{color: '#fff', padding: 3}}>爆款直降</Text>
-                        </View>
-                    </View>
-
-                    <View style={{alignItems: 'center'}}>
-                        <View style={{width: couponWidth, height: 80, backgroundColor: '#ccc', margin: 5}}></View>
-                        <Text>{this.state.hotMallName}</Text>
-                        <View style={{backgroundColor: '#e31e3d', paddingRight: 15, paddingLeft: 15, marginTop: 5, borderRadius: 16}}>
-                            <Text style={{color: '#fff', padding: 3}}>爆款直降</Text>
-                        </View>
-                    </View>
-
-                    <View style={{alignItems: 'center'}}>
-                        <View style={{width: couponWidth, height: 80, backgroundColor: '#ccc', margin: 5}}></View>
-                        <Text>{this.state.hotMallName}</Text>
-                        <View style={{backgroundColor: '#e31e3d', paddingRight: 15, paddingLeft: 15, marginTop: 5, borderRadius: 16}}>
-                            <Text style={{color: '#fff', padding: 3}}>爆款直降</Text>
-                        </View>
-                    </View>
+                    {this.renderHotItem()}
+                    {this.renderHotItem()}
+                    {this.renderHotItem()}
+                    {this.renderHotItem()}
+                    {this.renderHotItem()}
+                    {this.renderHotItem()}
+                    {this.renderHotItem()}
                 </ScrollView>
                 </View>
             </View>
