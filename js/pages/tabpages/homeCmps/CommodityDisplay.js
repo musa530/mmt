@@ -129,6 +129,7 @@ export default class CommodityDisplay extends Component{
             <View style={styles.container}>
                 <View style={styles.title}>
                     <Text style={styles.txt}>{this.props.title}</Text>
+					<Text style={{color: '#cdcdcd'}}>more</Text>
 			    </View>
                 <View style={{flex: 1}}>
                     <List goods={Goods}/>
@@ -147,11 +148,12 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     title: {
-		alignItems: 'center',
 		padding: 10,
 		backgroundColor: 'white',
 		borderBottomWidth: 1,
 		borderColor: '#cdcdcd',
+		flexDirection: 'row',
+		justifyContent: 'space-between'
 	},
 	txt: {
 		color: 'red',

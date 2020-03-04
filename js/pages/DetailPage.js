@@ -7,8 +7,8 @@ import EmpityBox from './EmpityBox';
 
 const {width, height} = Dimensions.get('window');
 const titleWidth = width/5 * 4.5;
-const modalHeight = height/3 * 1.5;
-const cencle = modalHeight - 55;
+const modalHeight = height/3 * 1.5;//选择颜色卡的高度
+const paramHeight = height/3 * 2.5;//产品参数卡的高度
 const buttonWidth = width/2 - 5;
 
 export default class DetailPage extends Component{
@@ -30,6 +30,7 @@ export default class DetailPage extends Component{
             price: 19.80, //商品价格
             kucun: 9, //库存
             mallCouont: 1, //商品数量
+            parameterModal: false,
         }
     }
 
@@ -124,7 +125,11 @@ export default class DetailPage extends Component{
                     borderBottomColor: '#cdcdcd', borderBottomWidth: 1}}
                 >
                     <Text style={{fontSize: 16}}>产品参数</Text>
-                    <TouchableOpacity style={{justifyContent: 'center'}}>
+                    <TouchableOpacity style={{justifyContent: 'center'}}
+                        onPress={()=>{
+                            this._setParameterVisible(true)
+                        }}
+                    >
                         <Image source={require('../../assest/images/more.png')}
                             style={{
                                 width: 30,height: 30, marginRight: 6
@@ -228,9 +233,16 @@ export default class DetailPage extends Component{
         );
     }
 
-    //判断modal是否显示
+    //判断选择规格弹窗是否显示
     _setModalVisible = (visible) => {
         this.setState({ modalVisible: visible });
+    }
+
+    _setParameterVisible = (vis) => {
+        this.setState({
+            parameterModal: vis
+        });
+        console.log(this.state.parameterModal);
     }
 
     //商品数量增加
@@ -258,13 +270,7 @@ export default class DetailPage extends Component{
         })
     }
 
-    render() {
-        const {navigation} = this.props;
-        const {state, setParams} = navigation;
-        const {params} = state;
-        const title = params.data.title;
-        const price = params.data.price;
-
+    renderSelectModal(){//选择颜色和分类模板
         let modalBackgroundStyle = {
             backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : 'red',
           };
@@ -275,6 +281,168 @@ export default class DetailPage extends Component{
         let paddingLR = {
             paddingLeft: 12, paddingRight: 12
         }
+        return(
+            <Modal
+                animationType={this.state.animationType}
+                transparent={this.state.transparent}
+                visible={this.state.modalVisible}
+                onRequestClose={() => { this._setModalVisible(false) } }
+            >
+                <View style={[styles.modalContainer, modalBackgroundStyle]}>
+                    <View style={[styles.modalInnerContainer, innerContainerTransparentStyle]}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
+                            <TouchableOpacity
+                                onPress={()=>{
+                                    this._setModalVisible(false)
+                                }}
+                                style={{backgroundColor: '#eee', padding: 3,borderRadius: 999, top: -25, width: 40, height: 40,
+                                    justifyContent: 'center', alignItems: 'center'
+                                }}
+                            >
+                                <Text style={{fontSize:20, color: '#f03', fontWeight: 'bold'}}>
+                                    X
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flexDirection: 'row'}}>
+                            <Image
+                                style={{width: 100, height: 100, resizeMode: 'stretch', borderWidth: 1, borderColor: '#eee'}}
+                                source={{uri: 'https://satarmen.com/uploads/home/store/goods/1/1_2019081619260225812.jpg'}}
+                            />
+                            <View style={{justifyContent: 'center', marginLeft: 15}}>
+                                <View style={{marginBottom: 30, flexDirection: 'row'}}>
+                                    <Text style={{fontSize: 18}}>价格: ￥</Text>
+                                    <Text style={{fontSize: 18, color: '#f00'}}>{this.state.price}</Text>
+                                </View>
+                                <Text style={{color: '#666'}}>库存：{this.state.kucun}件</Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={{color:'#666',margin: 8, fontSize: 16}}>图片联动：</Text>
+                            <Text style={{color:'#666',margin: 8, fontSize: 16}}>层数/卷数：</Text>
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <Text style={{color:'#666',margin: 8, fontSize: 16, flex: 1}}>数量：</Text>
+                                <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
+                                    onPress={()=>{
+                                        this.subCount(this.state.mallCouont)
+                                    }}
+                                >
+                                    <Text style={{fontSize: 16}}>-</Text>
+                                </TouchableOpacity>
+                                <View style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}>
+                                    <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.mallCouont}</Text>
+                                </View>
+                                <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
+                                    onPress={()=>{
+                                        this.addCount(this.state.mallCouont)
+                                    }}
+                                >
+                                    <Text style={{fontSize: 16}}>+</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        
+
+                        <View style={{flexDirection: 'row', marginTop: 20}}>
+                            <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#3CB371'}}>
+                                <Text style={{color: '#fff', fontSize: 18, padding: 10}}>加入购物车</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#E31E3D'}}>
+                                <Text style={{color: '#fff', fontSize: 18, padding: 10}}>立即购买</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+
+    renderParameter(){//产品参数
+        let modalBackgroundStyle = {
+            backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : 'red',
+          };
+        let innerContainerTransparentStyle = this.state.transparent
+        ? { backgroundColor: '#fff', padding: 5 }
+        : null;
+
+        let paramStyle = {
+            height: paramHeight,
+            width: width,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+        }
+
+        let finishButtom = {
+            marginLeft: 30,
+            marginRight: 30,
+            borderRadius: 16,
+            backgroundColor: '#f40',
+            height: 40, 
+            alignItems: 'center',
+            justifyContent: 'center'
+        }
+
+        return(
+            <Modal
+                animationType={this.state.animationType}
+                transparent={this.state.transparent}
+                visible={this.state.parameterModal}
+                onRequestClose={() => { this._setParameterVisible(false) } }
+            >
+                <View style={[styles.modalContainer, modalBackgroundStyle]}>
+                    <View style={[paramStyle, innerContainerTransparentStyle]}>
+                        {/* <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
+                            <TouchableOpacity
+                                onPress={()=>{
+                                    this._setParameterVisible(false)
+                                }}
+                                style={{backgroundColor: '#eee', padding: 3,borderRadius: 999, top: -25, width: 40, height: 40,
+                                    justifyContent: 'center', alignItems: 'center'
+                                }}
+                            >
+                                <Text style={{fontSize:20, color: '#f03', fontWeight: 'bold'}}>
+                                    X
+                                </Text>
+                            </TouchableOpacity>
+                        </View> */}
+                        <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 20}}>
+                            <Text style={{fontSize: 18, fontWeight: 'bold'}}>产品参数</Text>
+                        </View>
+                        <ScrollView>
+                            <ParamItem left={'品牌'} right={'叶梦提'}/>
+                            <ParamItem left={'材质'} right={'天然皓石'}/>
+                            <ParamItem left={'图案'} right={'水果'}/>
+                            <ParamItem left={'风格'} right={'原创设计'}/>
+                            <ParamItem left={'成色'} right={'全新'}/>
+                            <ParamItem left={'价格区间'} right={'51-100元'}/>
+                            <ParamItem left={'适用性别'} right={'男'}/>
+                            <ParamItem left={'颜色分类'} right={'美码7号（内周长55mm）美码8号（内周长57mm）美码9号（内周长60mm）美码10号（内周长62.5mm）美码11号（内周长65mm）美码12号（内周长67mm）'}/>
+                            <ParamItem left={'是否现货'} right={'现货'}/>
+                            <ParamItem left={'货号'} right={'货号63700519461'}/>
+                            <ParamItem left={'货号'} right={'货号63700519461'}/>
+                        </ScrollView>
+                        <TouchableOpacity style={[finishButtom]}
+                            onPress={()=>{
+                                this._setParameterVisible(false)
+                            }}
+                        >
+                            <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>完成</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+
+    render() {
+        const {navigation} = this.props;
+        const {state, setParams} = navigation;
+        const {params} = state;
+        const title = params.data.title;
+        const price = params.data.price;
+
+        
 
         return(
             <View style={styles.container}>
@@ -288,81 +456,35 @@ export default class DetailPage extends Component{
                     {this.renderEvaluate()}
                     {this.renderShopInfo()}
                     {this.renderDisplay()}
-                    <Modal
-                        animationType={this.state.animationType}
-                        transparent={this.state.transparent}
-                        visible={this.state.modalVisible}
-                        onRequestClose={() => { this._setModalVisible(false) } }
-                    >
-                        <View style={[styles.modalContainer, modalBackgroundStyle]}>
-                            <View style={[styles.modalInnerContainer, innerContainerTransparentStyle]}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <TouchableOpacity
-                                        onPress={()=>{
-                                            this._setModalVisible(false)
-                                        }}
-                                        style={{backgroundColor: '#eee', padding: 3,borderRadius: 999, top: -25, width: 40, height: 40,
-                                            justifyContent: 'center', alignItems: 'center'
-                                        }}
-                                    >
-                                        <Text style={{fontSize:20, color: '#f03', fontWeight: 'bold'}}>
-                                            X
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Image
-                                        style={{width: 100, height: 100, resizeMode: 'stretch', borderWidth: 1, borderColor: '#eee'}}
-                                        source={{uri: 'https://satarmen.com/uploads/home/store/goods/1/1_2019081619260225812.jpg'}}
-                                    />
-                                    <View style={{justifyContent: 'center', marginLeft: 15}}>
-                                        <View style={{marginBottom: 30, flexDirection: 'row'}}>
-                                            <Text style={{fontSize: 18}}>价格: ￥</Text>
-                                            <Text style={{fontSize: 18, color: '#f00'}}>{this.state.price}</Text>
-                                        </View>
-                                        <Text style={{color: '#666'}}>库存：{this.state.kucun}件</Text>
-                                    </View>
-                                </View>
-                                <View>
-                                    <Text style={{color:'#666',margin: 8, fontSize: 16}}>图片联动：</Text>
-                                    <Text style={{color:'#666',margin: 8, fontSize: 16}}>层数/卷数：</Text>
-                                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                        <Text style={{color:'#666',margin: 8, fontSize: 16, flex: 1}}>数量：</Text>
-                                        <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
-                                            onPress={()=>{
-                                                this.subCount(this.state.mallCouont)
-                                            }}
-                                        >
-                                            <Text style={{fontSize: 16}}>-</Text>
-                                        </TouchableOpacity>
-                                        <View style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}>
-                                            <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.mallCouont}</Text>
-                                        </View>
-                                        <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
-                                            onPress={()=>{
-                                                this.addCount(this.state.mallCouont)
-                                            }}
-                                        >
-                                            <Text style={{fontSize: 16}}>+</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                                
-
-                                <View style={{flexDirection: 'row', marginTop: 20}}>
-                                    <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#3CB371'}}>
-                                        <Text style={{color: '#fff', fontSize: 18, padding: 10}}>加入购物车</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#E31E3D'}}>
-                                        <Text style={{color: '#fff', fontSize: 18, padding: 10}}>立即购买</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+                    {this.renderSelectModal()}
+                    {this.renderParameter()}
                     <EmpityBox/>
                 </ScrollView>
+            </View>
+        );
+    }
+}
+
+let leftWidth = width/4;
+let rightWidth = width - leftWidth-30;
+
+//产品参数单行封装
+class ParamItem extends Component{
+    constructor(props){
+        super(props);
+    }
+
+    render(){
+        return(
+            <View style={{padding: 10, borderBottomWidth:1, borderBottomColor:'#eee'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{margin: 5, width: leftWidth}}>
+                        <Text style={{fontSize: 16}}>{this.props.left}</Text>
+                    </View>
+                    <View style={{margin: 5, width: rightWidth}}>
+                        <Text style={{color: '#666', flexWrap: 'wrap'}}>{this.props.right}</Text>
+                    </View>
+                </View>
             </View>
         );
     }
