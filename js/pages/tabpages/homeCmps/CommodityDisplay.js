@@ -39,7 +39,7 @@ class Item extends Component{
 		}
 	}
 
-	press=()=>{
+	press=()=>{//加入购物车
 		const {addCart} = this.state;
 		this.setState({
 			addCart: !addCart
@@ -102,6 +102,7 @@ class List extends Component{
 				list.push(row);
 			}
 		}
+		
 		return(
 			<View>
 				{list}
@@ -110,7 +111,6 @@ class List extends Component{
 	}
 	
 	press(data) {
-		// alert("您选择了："+data.title);
 		NavigationUtil.goPage({
 			navigation: this.props.navigation,
 			topTitle: '商品',

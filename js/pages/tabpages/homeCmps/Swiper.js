@@ -5,6 +5,21 @@ import Swiper from 'react-native-swiper';
 var {height, width} = Dimensions.get('window');
 
 
+const SwiperImg = [
+    {
+        url: '../../../../assest/images/swiper1.jpg'
+    },
+    {
+        url: '../../../../assest/images/swiper2.jpg'
+    },
+    {
+        url: '../../../../assest/images/swiper3.png'
+    },
+    {
+        url: '../../../../assest/images/swiper4.jpg'
+    },
+];
+
 export default class SwiperList extends Component{
     constructor(props){
         super(props);
@@ -27,6 +42,29 @@ export default class SwiperList extends Component{
             </Swiper>
         );
     }
+}
+
+class SwiperItem extends Component{
+    constructor(props){
+        super(props);
+    }
+
+    render(){
+        const swiperImg = this.props.Swiperimg;
+        const imgList = [];
+        for(var i in swiperImg){
+            var row = (
+                <View key={i}>
+                    <Image source={`require: {swiperImg[i].url}`}/>
+                </View>
+            );
+            imgList.push(row);
+            console.log(swiperImg[i].url);
+            
+        }
+        return {imgList};
+    }
+
 }
 
 const styles = StyleSheet.create({

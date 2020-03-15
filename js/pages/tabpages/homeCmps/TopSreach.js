@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavigationUtil from '../../../AppNavigator/NavigationUtil';
+import Toast from '../../../AppNavigator/ToastDemo';
 
 
 export default class TopSreach extends Component{
@@ -26,7 +27,7 @@ export default class TopSreach extends Component{
                     <View style={styles.category_item}>
                         <Ionicons
                             name={'ios-options'}
-                            size={22}
+                            size={20}
                             style={{color: '#fff'}}
                         />
                         <Text 
@@ -43,11 +44,15 @@ export default class TopSreach extends Component{
                         }, "SearchPage")
                     }}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={()=>{
+                        Toast.show('正在开发中...');
+                    }}
+                >
                     <View style={styles.category_item}>
                         <Ionicons
                             name={'md-headset'}
-                            size={22}
+                            size={20}
                             style={{color: '#fff'}}
                         />
                         <Text style={{fontSize: 12, color: 'white'}}>{this.state.kefu}</Text>
@@ -62,9 +67,10 @@ const styles = StyleSheet.create({
     conatainer: {
         flexDirection: 'row',
         position: "absolute",
-        paddingTop: 5,
+        paddingTop: 10,
         paddingStart: 15,
         paddingEnd: 15,
+        alignItems:'center'
     },
     input: {
         flex: 1,
