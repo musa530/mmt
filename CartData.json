@@ -1,0 +1,56 @@
+{
+  "data":[
+    {
+      "shopName":"腾达商贸",
+      "shopId" : "0001",
+      "shopInfo":[
+        {
+          "mallName": "【测试】羽绒棉服女中长款过膝大毛领棉衣韩版面包服学生加厚外套宽松棉袄 红色 M 短板",
+          "mallPrice": "87.00",
+          "kuCun":100,
+          "url":"https://img12.360buyimg.com/n8/jfs/t1/94595/40/10367/248300/5e19f265E0c1fba37/cc3093fad67c858d.jpg",
+          "sellNum":1,
+          "minQuantity": 1,
+          "maxQuantity": 10,
+          "itemId": "10001"
+        },
+        {
+          "mallName": "【测试】羽绒棉服女中长款过膝大毛领棉衣韩版面包服学生加厚外套宽松棉袄 红色 M 短板",
+          "mallPrice": "68.00",
+          "kuCun":120,
+          "url":"https://img12.360buyimg.com/n8/jfs/t1/94595/40/10367/248300/5e19f265E0c1fba37/cc3093fad67c858d.jpg",
+          "sellNum":1,
+          "minQuantity": 1,
+          "maxQuantity": 10,
+          "itemId": "10001"
+        }
+      ]
+    },
+    {
+      "shopName":"天猫商城",
+      "shopId" : "0001",
+      "shopInfo":[
+        {
+          "mallName": "【测试】羽绒棉服女中长款过膝大毛领棉衣韩版面包服学生加厚外套宽松棉袄 红色 M 短板",
+          "mallPrice": "156.00",
+          "kuCun":200,
+          "url":"https://img12.360buyimg.com/n8/jfs/t1/94595/40/10367/248300/5e19f265E0c1fba37/cc3093fad67c858d.jpg",
+          "sellNum":1,
+          "minQuantity": 1,
+          "maxQuantity": 10,
+          "itemId": "10001"
+        },
+        {
+          "mallName": "【测试】羽绒棉服女中长款过膝大毛领棉衣韩版面包服学生加厚外套宽松棉袄 红色 M 短板",
+          "mallPrice": "120.00",
+          "kuCun":150,
+          "url":"https://img12.360buyimg.com/n8/jfs/t1/94595/40/10367/248300/5e19f265E0c1fba37/cc3093fad67c858d.jpg",
+          "sellNum":1,
+          "minQuantity": 1,
+          "maxQuantity": 10,
+          "itemId": "10001"
+        }
+      ]
+    }
+  ]
+}
