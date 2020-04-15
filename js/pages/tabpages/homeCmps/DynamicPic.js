@@ -4,12 +4,20 @@ import {View, StyleSheet, Dimensions, Image} from 'react-native';
 export default class DynamicPic extends Component{
 
     render() {
+        let floor_ads = this.props.floor_ads
+        // console.log(floor_ads)
         return (
             <View style={styles.circle}>
-                <Image
-                    source={require('../../../../assest/images/Dynamic.png')}
-                    style={styles.imageStyle}
-                />
+                {
+                    floor_ads.map((item, index) => {
+                        // console.log(item.adv_code)
+                        return <Image
+                            source={{uri:item.adv_code}}
+                            style={styles.imageStyle}
+                            key={index}
+                        />
+                    })
+                }
             </View>
         );
     }

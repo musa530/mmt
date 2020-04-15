@@ -8,7 +8,7 @@ var helfWidth = width/2;
 var itemWidth = helfWidth -10;
 var imgWidth = helfWidth - 12;
 
-export default class CommodityDisplay extends Component{
+export default class HotProducts extends Component{
     constructor(props){
 		super(props);
 		this.state = {
@@ -17,9 +17,9 @@ export default class CommodityDisplay extends Component{
 	}
 	
 	componentDidMount() {
-		let {good_products,hot_products,recently_products,id} = this.props;
+		let {hot_products,recently_products} = this.props;
 		this.setState({
-			data: good_products
+			data: hot_products
 		})
 	}
 
@@ -27,12 +27,13 @@ export default class CommodityDisplay extends Component{
 		let goods_image = info.item.goods_img_480
 		let goods_name = info.item.goods_name
 		let store_name = info.item.store_name
-		let goods_price = info.item.goods_price
-		let goods_id = info.item.goods_id
+        let goods_price = info.item.goods_price
+        let goods_id = info.item.goods_id
 		let store_id = info.item.store_id
 		return (
 			<View style={{borderWidth:1, borderColor:'#eee',width:itemWidth,marginBottom:2}}>
-				<TouchableOpacity
+
+                <TouchableOpacity
 					onPress={()=> {
 						NavigationUtil.goPage({
 							navigation: this.props.navigation,
@@ -80,7 +81,7 @@ export default class CommodityDisplay extends Component{
     render() {
 		// console.log(`mall_imageWidth: ${imgWidth}`);
 		// console.log(this.state.data)
-		let data = this.props.good_products
+		let data = this.props.hot_products
         return (
             <View style={styles.container}>
                 <View style={styles.title}>

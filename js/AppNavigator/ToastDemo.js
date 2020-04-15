@@ -35,6 +35,6 @@ ToastDemo.show=(message)=>{
 // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
     setTimeout(function () {
         Toast.hide(toast);
-    }, 700);
+    }, 3000);
 }
 module.exports = ToastDemo;

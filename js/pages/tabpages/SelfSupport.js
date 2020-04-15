@@ -137,9 +137,9 @@ export default class SelfSupport extends Component{
                 {this.renderNavBar()}
                 <ScrollView>
                     <Search/>
-                    <View style={{height: 200}}>
+                    {/* <View style={{height: 200}}>
                         <Swiper height={200}/>
-                    </View> 
+                    </View>  */}
                     {this.renderCoupon()}
                     {this.renderHot()}
                     <CommodityDisplay title={'全部商品'}/>

@@ -24,7 +24,7 @@ export default class NavigationBar extends Component{
                             }, "ActivePage")
                         }}
                     >
-                        <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/zhekou.png')}/>
+                        <Image style={styles.bar_image} source={{uri:'https://satarmen.com/h5/img/promotion.458946b6.png'}}/>
                         <Text style={styles.bar_text}>折扣专区</Text>
                     </TouchableOpacity>
                 </View>
@@ -40,7 +40,7 @@ export default class NavigationBar extends Component{
                             }, "ActivePage")
                         }}
                     >
-                        <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/miaosha.png')}/>
+                        <Image style={styles.bar_image} source={{uri:'https://satarmen.com/h5/img/miaosha.c504fdea.png'}}/>
                         <Text style={styles.bar_text}>限时秒杀</Text>
                     </TouchableOpacity>
                 </View>
@@ -55,7 +55,7 @@ export default class NavigationBar extends Component{
                             }, "ActivePage")
                         }}    
                     >
-                        <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/quan.png')}/>
+                        <Image style={styles.bar_image} source={{uri:'https://satarmen.com/h5/img/coupon.b1868411.png'}}/>
                         <Text style={styles.bar_text}>神券专区</Text>
                     </TouchableOpacity>
                 </View>
@@ -71,7 +71,7 @@ export default class NavigationBar extends Component{
                             }, "ShopPage")
                         }}
                     >
-                        <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/self.png')}/>
+                        <Image style={styles.bar_image} source={{uri:'https://satarmen.com/h5/img/ziying.89784b4d.png'}}/>
                         <Text style={styles.bar_text}>自营专区</Text>
                     </TouchableOpacity>  
                 </View>
@@ -87,7 +87,7 @@ export default class NavigationBar extends Component{
                             }, "MemberCenter")
                         }}
                     >
-                        <Image style={styles.bar_image} source={require('../../../../assest/images/navigator/huiyuan.png')}/>
+                        <Image style={styles.bar_image} source={{uri:'https://satarmen.com/h5/img/pintuan.754899ec.png'}}/>
                         <Text style={styles.bar_text}>会员中心</Text>
                     </TouchableOpacity>
                 </View>
@@ -116,11 +116,10 @@ const styles = StyleSheet.create({
     },
     bar_text: {
         color: '#555',
-        marginTop: 8,
         fontSize: 14
     },
     bar_image: {
-        width: 24,
-        height: 24
+        width: 60,
+        height: 60
     },
 });

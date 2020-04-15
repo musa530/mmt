@@ -17,7 +17,7 @@ export default class TopSreach extends Component{
     render() {
         return(
             <View style={styles.conatainer}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={()=>{
                         NavigationUtil.goPage({
                             navigation: this.props.navigation,
@@ -36,7 +36,7 @@ export default class TopSreach extends Component{
                             style={{fontSize: 12, color: 'white'}}
                         >{this.state.categonry_text}</Text>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TextInput
                     placeholder={'请输入搜索店铺/商品名称'}
                     style={styles.input}
@@ -46,7 +46,7 @@ export default class TopSreach extends Component{
                         }, "SearchPage")
                     }}
                 />
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={()=>{
                         Toast.show('正在开发中...');
                     }}
@@ -59,7 +59,7 @@ export default class TopSreach extends Component{
                         />
                         <Text style={{fontSize: 12, color: 'white'}}>{this.state.kefu}</Text>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         );
     }
@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         position: "absolute",
         paddingTop: 10,
-        paddingStart: 15,
-        paddingEnd: 15,
         alignItems:'center'
     },
     input: {

@@ -7,27 +7,38 @@ export default class NewsSwiper extends Component{
         super(props);
         this.state = {
             title: '最新资讯',
-            text1: '光年之外——GEM',
-            text2: '光年之外——GEM&&Ari',
-            text3: '光年之外——GEM&&NW',
-            text4: '光年之外——GEM&&Focex',
+            data:[]
         }
     }
+
+    componentDidMount() {
+        fetch('https://satarmen.com/api/Article/article_list?ac_id=1&page=0')
+        .then(response => response.json())
+        .then((responseJson) => {
+            let data = responseJson.result.article_list
+            this.setState({data})
+        })
+        .catch(error => console.log(error))
+    }
+
     render() {
+        let data = this.state.data
+        // console.log(data)
         return (
             <View style={styles.news_swiper}>
                 <Text style={styles.title}>{this.state.title}</Text>
                 <Swiper style={styles.wrapper}
                     horizontal={false}
-                    autoplay={'true'}
+                    autoplay={true}
                     autoplayTimeout={4}
                     paginationStyle={styles.paginationStyle}
                     showsPagination={false}
                 >
-                    <Text style={styles.newsText}>{this.state.text1}</Text>
-                    <Text style={styles.newsText}>{this.state.text2}</Text>
-                    <Text style={styles.newsText}>{this.state.text3}</Text>
-                    <Text style={styles.newsText}>{this.state.text4}</Text>
+                    {
+                        data.map((item, index) => {
+                            return <Text key={index} style={styles.newsText} >{item.article_title}</Text>
+                        })
+                    }
                 </Swiper>
             </View>
         );
@@ -55,5 +66,9 @@ const styles = StyleSheet.create({
         marginRight: 15,
         fontSize:16
     },
-    newsText:{}
+    newsText:{
+        height:40,
+        lineHeight:20,
+        color:'#333'
+    }
 });

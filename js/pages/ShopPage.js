@@ -4,7 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ShopHomePage from './shopinnerpages/ShopHomePage';
 import AllMallPage from './shopinnerpages/AllMallPage';
 import ShopCategoryPage from './shopinnerpages/ShopCategoryPage';
-import { withNavigationFocus } from 'react-navigation';
+import Toast from '../AppNavigator/ToastDemo'
 
 const {width, height} = Dimensions.get('window');
 
@@ -17,27 +17,47 @@ export default class ShopPage extends Component{
             placeholder:'搜索本店商品',
             inLikedNum: 44,
             inLiked: true,
-            shopName:'新疆商城自营超市',
             routeName:'Home',
             newArr: TabArr,
             currentIndex:0,
-            id: -1
+            id: -1,
+            store_info:[],
         }
     }
 
     componentDidMount(){
         // console.log(this.props.navigation.state.params);
+        Toast.show('数据加载中...')
+        let store_id = this.props.navigation.state.params.store_id
+        let store_name = this.props.navigation.state.params.store_name
+        this.setState({shopName: store_name})
+        this._netFetch(store_id)
     }
 
     static navigationOptions = ({navigation}) => ({
-        title: `${navigation.state.params.topTitle}`
+        title: `${navigation.state.params.store_name}`
     });
 
-    renderSearch(){
+    _netFetch = (store_id) => {
+        fetch(`https://satarmen.com/api/Store/store_info?store_id=${store_id}`)
+        .then(response => response.json())
+        .then(res => {
+            // console.log(res.result)
+            let store_info = res.result.store_info
+            this.setState({
+                store_info
+            })
+        })
+        .catch(error => console.log(error))
+        
+    }
+
+    renderSearch = () => {
+        const {store_info} = this.state
         return(
             <View>
                 <ImageBackground
-                    source={{uri:'http://mpic.tiankong.com/bc7/fa6/bc7fa6d7856b0c72fdb31ad01e16c8bc/640.jpg@670w'}}
+                    source={{uri:store_info.mb_title_img}}
                     style={{width:width,height:200}}
                 >
                     <View style={styles.top_search}>
@@ -74,14 +94,14 @@ export default class ShopPage extends Component{
     }
 
     renderShopInfo(){
-        const {inLiked,newArr} = this.state;
+        const {inLiked,store_info,newArr} = this.state;
         return(
             <View style={{marginTop:10,marginRight:8,marginLeft:8}}>
                 <View style={{backgroundColor:'#fff',borderRadius:5}}>
                     <View style={{flexDirection:'row',alignItems:'center'}}>
                         <View style={{padding:10}}>
                             <Image
-                                source={{uri:'http://mpic.tiankong.com/bc7/fa6/bc7fa6d7856b0c72fdb31ad01e16c8bc/640.jpg@670w'}}
+                                source={{uri:store_info.store_avatar}}
                                 style={{width:80,height:40}}
                             />
                         </View>
@@ -97,12 +117,11 @@ export default class ShopPage extends Component{
                                     style={{backgroundColor:'#f00',padding:2,paddingLeft:5,paddingRight:5,borderRadius:8,width:55,alignItems:'center'}}
                                     onPress={()=>this.setState({inLiked:!inLiked})}
                                 >
-                                    {inLiked ?
+                                    {store_info.is_favorate ?
                                         <Text style={{color:'#fff'}}>已收藏</Text>
                                         :
                                         <Text style={{color:'#fff'}}>收藏</Text>
                                     }
-                                    
                                 </TouchableOpacity>
                             </View>
                             <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginTop:2}}>

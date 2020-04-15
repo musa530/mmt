@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, SectionList} from 'react-native';
 import Modal from 'react-native-modal';
-import Swiper from './tabpages/homeCmps/Swiper';
 import Toast from '../AppNavigator/ToastDemo';
 import NavigationUtil from '../AppNavigator/NavigationUtil';
 import EmpityBox from './EmpityBox';
@@ -20,14 +19,12 @@ export default class DetailPage extends Component{
         this.state={
             share: '分享',
             expressFee: '0.00',
-            monthSeles: '8980',
             address: '新疆乌鲁木齐',
             evaluateNum: '7894',
             userName: 'r***2',
             shopName: '雪山果园旗舰店',
             evaluateText:'宝贝收到了，很喜欢，物流快，包装很严谨，没有破损摔坏情况，很满意！卖家服务到位，服务态度好，很热情！良心商家，推荐推荐推荐！',
             selected: '高 梦幻蓝咖啡杯碟',
-            price: 19.80, //商品价格
             kucun: 9, //库存
             mallCouont: 1, //商品数量
             inLike:false,
@@ -39,36 +36,65 @@ export default class DetailPage extends Component{
             modalVisible: false,//颜色选择模态场景是否可见
             parameterModal: false,//产品参数模态场景是否可见
             backdropTransitionOutTiming: 0,
+            swiperImg:'',
+            goods_info:[],//商品信息
+            store_info:[],//店铺信息
+            goods_evaluate_info:[],//商品评价
+            index: 0,
         }
     }
 
     //设置页眉
-    static navigationOptions = ({ navigation }) => ({
-        title: `${navigation.state.params.topTitle}`
+    static navigationOptions = () => ({
+        title: '详情页'
     });
     componentDidMount() {
-        let topTitle = this.props.navigation.state.params.topTitle;
+        // const {navigation} = this.props;
+        // const {state, setParams} = navigation;
+        // const {params} = state;
+        // this.setState({index:0})
+        let id = this.props.navigation.state.params.goods_id
+        console.log('goods_id: ' + id)
+        this._netFetch(id)
+        Toast.show('数据读取中...')
     }
 
-    renderTitle=(title, price) => {//商品标题价格快递月销地址
+    _netFetch = (id) => {
+        fetch(`https://satarmen.com/api/goods/goods_detail?goods_id=${id}&key=null`)
+        .then(response => response.json())
+        .then((res) => {
+            console.log('res.result')
+            let goods_evaluate_info = res.result.goods_evaluate_info
+            let goods_info = res.result.goods_info
+            let goods_image = res.result.goods_image
+            let store_info = res.result.store_info
+            console.log(typeof goods_image)
+            this.setState({
+                swiperImg:goods_image, goods_info, store_info,goods_evaluate_info
+            })
+        })
+        .catch(error => console.log(error))
+    }
+
+    renderTitle=(title, price, salenum, freight, address) => {//商品标题价格快递月销地址
         return (
             <View style={{paddingRight: 5, paddingLeft: 5, backgroundColor: 'white', top: -13, paddingTop: 5}}>
                 <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
                     <Text numberOfLines={2}
                         style={{width: titleWidth, flex: 1, color: '#333', fontSize: 15}}
-                    >默认标题前缀添加部分为了增加标题字数{title}</Text>
+                    >{title}</Text>
                     <TouchableOpacity style={{alignItems: 'center',marginLeft: 5, marginRight: 3}}>
                         <Image style={{width: 25, height: 25}} source={require('../../assest/images/fenxiang.png')}/>
                         <Text style={{color: '#999', fontSize: 12}}>{this.state.share}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{marginBottom: 10}}>
-                    <Text style={{fontSize: 22}}>￥{price}</Text>
+                    <Text style={{fontSize: 22,color:'red'}}>￥{price}</Text>
                 </View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3}}>
-                    <Text style={{color: '#666', fontSize: 13}}>快递：{this.state.expressFee}</Text>
-                    <Text style={{color: '#666', fontSize: 13}}>月销{this.state.monthSeles}</Text>
-                    <Text style={{color: '#666', fontSize: 13}}>{this.state.address}</Text>
+                    <Text style={{color: '#666', fontSize: 13}}>快递：{freight}</Text>
+                    <Text style={{color: '#666', fontSize: 13}}>月销 {salenum}</Text>
+                    <Text style={{color: '#666', fontSize: 13, width:90}} numberOfLines={1}>{address}</Text>
                 </View>
             </View>
         );
@@ -167,11 +193,11 @@ export default class DetailPage extends Component{
         );
     }
 
-    renderEvaluate() {//商品评价部分
+    renderEvaluate(evaluate) {//商品评价部分
         return(
             <View style={{backgroundColor: 'white',padding: 5, marginTop: 10}}>
                 <View style={{marginTop: 5, marginBottom: 5}}>
-                    <Text style={{fontSize: 18}}>商品评价  ({this.state.evaluateNum})</Text>
+                    <Text style={{fontSize: 18}}>商品评价  ({evaluate.all})</Text>
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
                     <View style={{backgroundColor: '#ccc', width: 40, height: 40, borderRadius: 999}}></View>
@@ -196,19 +222,43 @@ export default class DetailPage extends Component{
         );
     }
 
-    renderShopInfo() {//店铺信息
+    renderShopInfo = (name,logo, store_credit) => {//店铺信息
+        // let desccredit = store_credit.store_desccredit//宝贝描述
+        // let servicecredit = store_credit.store_servicecredit//卖家服务
+        // let deliverycredit = store_credit.store_deliverycredit//物流服务
+        // console.log(store_credit)
+        let tempArr = []
+        for(let i in store_credit){
+            let tempObj = store_credit[i]
+            tempArr.push(tempObj)
+        }
+        // console.log(tempArr)
+        let itemStyle = {flexDirection:'row',alignItems:'center'}
+
         return(
             <View style={{backgroundColor: '#fff', marginTop: 10, padding: 5}}>
                 <View style={{flexDirection: 'row'}}>
-                    <View style={{width: 60, height: 60, backgroundColor: '#ccc'}}></View>
-                    <Text style={{color: '#666', marginLeft: 10, marginTop: 8, fontSize: 15}}>{this.state.shopName}</Text>
+                    <View style={{width: 60, height: 60}}>
+                        <Image source={{uri:logo}} style={{width:60,height:60}}/>
+                    </View>
+                    <Text style={{color: '#f00', marginLeft: 10, marginTop: 8, fontSize: 15}}>{name}</Text>
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 5}}>
-                    <Text style={{color: '#666', fontSize: 15}}>宝贝描述 5.0</Text>
-                    <Text style={{color: '#666', fontSize: 15}}>卖家服务 5.0</Text>
-                    <Text style={{color: '#666', fontSize: 15}}>物流服务 5.0</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10}}>
+                    {
+                        tempArr.map((item, index) => {
+                            return (
+                                <View style={itemStyle} key={index}>
+                                    <Text style={{color: '#666', fontSize: 15}}>{item.text} </Text>
+                                    <Text style={{color: '#666', fontSize: 15}}>{item.credit}</Text>
+                                    <Text style={{color: '#f00', fontSize: 15}}>{item.percent_text}</Text>
+                                </View>
+                            )
+                            
+                        })
+                    }
+                    
                 </View>
-                <View style={{width: width, height: 40}}></View>
+                <View style={{width: width, height: 20}}></View>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginBottom: 10}}>
                     <TouchableOpacity style={{backgroundColor: '#8a8a8a', padding: 5}}>
                         <Text style={{color: '#fff', fontSize: 15}}>查看分类</Text>
@@ -229,10 +279,10 @@ export default class DetailPage extends Component{
                     <Text style={{fontSize: 18, color: '#fff'}}>商品详细</Text>
                 </View>
                 {/* 添加网图（长图） */}
-                <Image source={{uri: 'https://satarmen.com/uploads/home/store/goods/554/554_2019122712562410694.png'}}
+                {/* <Image source={{uri: 'https://satarmen.com/uploads/home/store/goods/554/554_2019122712562410694.png'}}
                     style={{width: width, height: 1600, resizeMode: 'stretch'}}
-                />
-                {/* <Image source={{uri: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=186611946,905648253&fm=26&gp=0.jpg'}}
+                /> */}
+                <Image source={{uri: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=186611946,905648253&fm=26&gp=0.jpg'}}
                     style={{width: width, height: width, resizeMode: 'stretch'}}
                 />
                 <Image source={{uri: 'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=129639009,1876542785&fm=26&gp=0.jpg'}}
@@ -240,7 +290,7 @@ export default class DetailPage extends Component{
                 />
                 <Image source={{uri: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1017050554,3701300423&fm=26&gp=0.jpg'}}
                     style={{width: width, height: width, resizeMode: 'stretch'}} 
-                />*/}
+                />
             </View>
         );
     }
@@ -260,7 +310,9 @@ export default class DetailPage extends Component{
     //商品数量增加
     addCount=(count)=>{
         //点击之后数量增加
-        count++;
+        if (count<10) {
+            count++;
+        }
 
         //数量变化界面渲染
         this.setState({
@@ -282,12 +334,47 @@ export default class DetailPage extends Component{
         })
     }
 
-    renderSelectModal(){//选择颜色和分类模板
+    sectionCmpn = (item) => {
+        console.log(item)
+        return(
+            <View>
+                <Text>1</Text>
+            </View>
+        );
+    }
+
+    renderItem = (cell) =>{
+        return(
+            <View>
+                <Text>1</Text>
+            </View>
+        );
+    }
+
+    renderSelectModal = (storage, price, url, spec_name, spec_value) => {//选择颜色和分类模板
         let innerContainerTransparentStyle = { backgroundColor: '#fff', padding: 5 }
 
-        let paddingLR = {
-            paddingLeft: 12, paddingRight: 12
+        let paddingLR = { paddingLeft: 12, paddingRight: 12 }
+
+        let specArr = []
+        for (let i in spec_name) {
+            let tempObj = {}
+            tempObj.name = spec_name[i]
+            let innerArr = []
+            for (let j in spec_value) {
+                console.log(spec_value[j])
+                if (j == i) {
+                    let innerObj = spec_value[j]
+                    innerArr.push(innerObj)
+                }
+            }
+            if(innerArr != ''){
+                tempObj.item = innerArr
+            }
+            
+            specArr.push(tempObj)
         }
+        console.log(specArr)
         return(
             <Modal
                 animationIn={this.state.animationIn}
@@ -309,14 +396,14 @@ export default class DetailPage extends Component{
                             <View style={{flexDirection: 'row',}}>
                                 <Image
                                     style={{width: 100, height: 100, resizeMode: 'stretch', borderWidth: 1, borderColor: '#eee'}}
-                                    source={{uri: 'https://satarmen.com/uploads/home/store/goods/1/1_2019081619260225812.jpg'}}
+                                    source={{uri: url}}
                                 />
                                 <View style={{justifyContent: 'center', marginLeft: 15}}>
                                     <View style={{marginBottom: 30, flexDirection: 'row'}}>
                                         <Text style={{fontSize: 18}}>价格: ￥</Text>
-                                        <Text style={{fontSize: 18, color: '#f00'}}>{this.state.price}</Text>
+                                        <Text style={{fontSize: 18, color: '#f00'}}>{price}</Text>
                                     </View>
-                                    <Text style={{color: '#666'}}>库存：{this.state.kucun}件</Text>
+                                    <Text style={{color: '#666'}}>库存：{storage}件</Text>
                                 </View>
                             </View>
                             <TouchableOpacity
@@ -332,20 +419,16 @@ export default class DetailPage extends Component{
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <View>
-                                <Text style={{color:'#666',margin: 8, fontSize: 16,marginRight:0}}>图片联动：</Text>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center',paddingLeft:8}}>
-                                <View style={{backgroundColor:'#eee',padding: 5}}>
-                                    <Text style={{color:'#666', fontSize: 14}}>图片联动</Text>
-                                </View>
-                                <View style={{backgroundColor:'#eee',padding: 5}}>
-                                    <Text style={{color:'#666', fontSize: 14}}>图片联动</Text>
-                                </View>
-                            </View>
-                            <View>
-                                <Text style={{color:'#666',margin: 8, fontSize: 16}}>层数/卷数：</Text>
-                            </View>
+                            <SectionList
+                                renderSectionHeader={this.sectionCpm}
+                                renderItem={(data) => this.renderItem(data)}
+                                sections={specArr}
+                                ItemSeparatorComponent={()=><View/>}
+                                ListHeaderComponent={() => <View/>}
+                                ListFooterComponent={()=><View/>}
+                                showsVerticalScrollIndicator={false}
+                                keyExtractor={(item, index) => 'key' + index + item}
+                            />
                             
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 <Text style={{color:'#666',margin: 8, fontSize: 16, flex: 1}}>数量：</Text>
@@ -371,11 +454,29 @@ export default class DetailPage extends Component{
                         </ScrollView>
 
                         <View style={{flexDirection: 'row', marginTop: 20}}>
-                            <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center',width: buttonWidth, backgroundColor: '#3CB371'}}>
+                            <TouchableOpacity 
+                                style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    width: buttonWidth,
+                                    backgroundColor: '#3CB371',
+                                    borderTopLeftRadius:16,
+                                    borderBottomLeftRadius:16
+                                }}
+                            >
                                 <Text style={{color: '#fff', fontSize: 18, padding: 10}}>加入购物车</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: buttonWidth, backgroundColor: '#E31E3D'}}>
+                            <TouchableOpacity 
+                                style={{
+                                    justifyContent: 'center', 
+                                    alignItems: 'center', 
+                                    width: buttonWidth, 
+                                    backgroundColor: '#E31E3D',
+                                    borderTopRightRadius:16,
+                                    borderBottomRightRadius:16
+                                }}
+                            >
                                 <Text style={{color: '#fff', fontSize: 18, padding: 10}}>立即购买</Text>
                             </TouchableOpacity>
                         </View>
@@ -459,13 +560,19 @@ export default class DetailPage extends Component{
         }
     }
 
-    renderFooterComp(){
+    renderFooterComp(store_id,store_name){
         const {inLike} = this.state;
         return(
             <View style={{height:50,backgroundColor:'#fff',width:width,flexDirection:'row',alignItems:'center',padding:5}}>
                 <View style={{width:buttonWidth,flexDirection:'row',alignItems:'center',justifyContent:'space-around'}}>
                     <TouchableOpacity
                         style={{alignItems:'center'}}
+                        onPress={() => {
+                            NavigationUtil.goPage({
+                                navigation: this.props.navigation,
+                                store_id,store_name
+                            },"ShopPage")
+                        }}
                     >
                         <AntDesign
                             name={'isv'}
@@ -525,33 +632,68 @@ export default class DetailPage extends Component{
         );
     }
 
-    render() {
-        const {navigation} = this.props;
-        const {state, setParams} = navigation;
-        const {params} = state;
-        const title = params.data.title;
-        const price = params.data.price;
-        // console.log(params.data);
-        
-        
+    renderSwiper = () => {
+        let swiperImg = this.state.swiperImg
+        let banArr = swiperImg.split(",")
+        // console.log(banArr.length)
+        return (
+            <ScrollView
+                horizontal={true}
+                pagingEnabled={true}
+                style={{height:width}}
+            >
+                {
+                    banArr.map((item, index) => {
+                        return (
+                            <View>
+                                <Image source={{uri:item}} style={{height:width,width:width}} key={index}/>
+                                <View
+                                    style={{position:'absolute',backgroundColor:'#cdcdcd',
+                                        right:20,top:10,padding:5,borderRadius:999,width:30,height:30,
+                                        alignItems:'center'
+                                    }}
+                                >
+                                    <Text style={{color:'#000'}}>{index + 1 + "/" + banArr.length}</Text>
+                                </View>
+                            </View>
+                        );
+                    })
+                }
+            </ScrollView>
+        );
+    }
 
+    render() {
+        const {goods_info, store_info,goods_evaluate_info} = this.state//获取商品信息
+        const title = goods_info.goods_name;//商品名称
+        const price = goods_info.goods_price;//商品价格
+        const salenum = goods_info.goods_salenum//商品销量
+        const freight = goods_info.goods_freight//商品运费
+        const storage = goods_info.goods_storage//商品库存
+        const evaluate = goods_evaluate_info//商品评价
+        const spec_name = goods_info.spec_name//规格名称
+        const spec_value = goods_info.spec_value//规格值
+        const address = store_info.store_address//店铺地址
+        const store_name = store_info.store_name//店铺名称
+        const store_logo = store_info.store_logo//店铺Logo
+        const store_id = store_info.store_id//店铺ID
+        const store_credit = store_info.store_credit//店铺评分
+        console.log(evaluate)
         return(
             <View style={styles.container}>
                 <ScrollView>
-                    <View style={{width: width, height: width}}>
-                        <Swiper height={width}/>
-                    </View>
-                    {this.renderTitle(title, price)}
+                    {this.renderSwiper()}
+                    {this.renderTitle(title, price,salenum,freight,address)}
                     {this.renderCoupon()}
                     {this.renderSelect()}
-                    {this.renderEvaluate()}
-                    {this.renderShopInfo()}
+                    {this.renderEvaluate(evaluate,store_id)}
+                    {this.renderShopInfo(store_name, store_logo, store_credit)}
                     {this.renderDisplay()}
-                    {this.renderSelectModal()}
+                    {this.renderSelectModal(storage, price,'https://satarmen.com/uploads/home/store/goods/544/544_2019122413355384699_240.jpg', spec_name, spec_value)}
                     {this.renderParameter()}
                     <EmpityBox/>
                 </ScrollView>
-                {this.renderFooterComp()}
+                {this.renderFooterComp(store_id,store_name)}
             </View>
         );
     }
