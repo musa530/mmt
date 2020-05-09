@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, ScrollView, Image, Dimensions, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, Image, Dimensions, StyleSheet, BackHandler} from 'react-native';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer} from 'react-navigation';
 import All from './orderpages/All';
@@ -20,7 +20,13 @@ export default class AllOrder extends Component{
 
     componentDidMount(){
         this.tabTopSelect()
+        // BackHandler.addEventListener('hardwareBackPress',  ()=> {
+        //     this.props.navigation.goBack(); // 返回上一页
+        //     return true;
+        // });
     }
+
+
 
     tabTopSelect(){//判断顶部导航栏跳转的页面
         const {navigate} = this.props.navigation.state.params;

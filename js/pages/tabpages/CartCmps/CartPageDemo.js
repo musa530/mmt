@@ -461,7 +461,7 @@ class Empity extends Component{
                         this.renderCartItem()
                     }
                     <View style={{borderBottomColor:'#cdcdcd',borderBottomWidth:1,margin:30}}></View>
-                    <CommodityDisplay title={'可能您想要'}/>
+                    {/* <CommodityDisplay title={'可能您想要'}/> */}
                 </ScrollView>
                 {isManaged? this.renderAllSelect() : this.renderDelete()}
             </View>

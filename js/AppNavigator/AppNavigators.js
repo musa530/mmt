@@ -1,6 +1,9 @@
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
+import {connect} from 'react-redux';
+import {createReactNavigationReduxMiddleware, createReduxContainer} from 'react-navigation-redux-helpers';
 import Login from '../pages/Login';
+import SignIn from '../pages/SignIn';
 import HomePage from '../pages/HomePage';
 import DetailPage from '../pages/DetailPage';
 import SearchPage from '../pages/SearchPage';
@@ -21,8 +24,11 @@ import Liked from '../pages/tabpages/ProfileCmps/Liked';
 import ZiJin from '../pages/tabpages/ProfileCmps/ZiJin';
 import DaiJinQuan from '../pages/tabpages/ProfileCmps/DaiJinQuan';
 import SafeCenter from '../pages/tabpages/ProfileCmps/SafeCenter';
+import TiXian from '../pages/tabpages/ProfileCmps/TiXian';
 
 const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
+
+export const rootCom = 'Init';
 
 const InitNvigator = createStackNavigator({
     Login: {
@@ -43,6 +49,13 @@ const MainNvigator = createStackNavigator({
     DetailPage: {//商品详情页
         screen: DetailPage,
         navigationOptions: {
+            
+        }
+    },
+    SignIn: {//商品详情页
+        screen: SignIn,
+        navigationOptions: {
+            headerShown:false
         }
     },
     ActivePage: {//首页活动页面
@@ -318,9 +331,30 @@ const MainNvigator = createStackNavigator({
             },
         }
     },
+    TiXian: {//体现管理
+        screen: TiXian,
+        navigationOptions: {
+            title:'体现管理',
+            headerTintColor: 'white',//返回图标和文字的颜色
+            headerStyle: {
+                backgroundColor: '#E31E3D',
+                height:40
+            },
+            headerTitleStyle: {
+                flex: 1,
+                alignSelf: 'center',
+                textAlign: 'center',
+                fontSize:18
+            },
+            headerTitleContainerStyle: {
+                left: TITLE_OFFSET,
+                right: TITLE_OFFSET,
+            },
+        }
+    },
 });
 
-const RootNavigator = createSwitchNavigator({
+export const RootNavigator = createSwitchNavigator({
     Init: InitNvigator,
     Main: MainNvigator,
 },{
@@ -330,4 +364,30 @@ const RootNavigator = createSwitchNavigator({
     }
 });
 
-export default createAppContainer(RootNavigator);
+/**
+ * 初始化react-navigation与redux 的中间件
+ * @Type (Middleware)
+ */
+export const middleware = createReactNavigationReduxMiddleware(
+    state => state.nav
+);
+
+/**
+ * 将根导航器组件传递给 reduxifyNavigator 函数
+ * 并返回一个将navigation state 和 dispatch 函数作为props 的新组件
+ * 注意：要在createReactNavigationReduxMiddleware之后执行
+ */
+const AppWithNavigationState = createReduxContainer(RootNavigator)
+
+/**
+ * State 到 Props 的映射关系
+ * @param state 
+ */
+const mapStateToProps = state => ({
+	state: state.nav,
+});
+
+/**
+ * 链接React 组件与 Redux store
+ */
+export default connect(mapStateToProps)(AppWithNavigationState);

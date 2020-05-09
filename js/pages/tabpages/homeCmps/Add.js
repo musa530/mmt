@@ -18,7 +18,7 @@ export default class Add extends Component{
     render() {
         console.log(`add_imageWidth:${imageWidth}`)
         let promotion_ads = this.props.promotion_ads
-        console.log(promotion_ads)
+        // console.log(promotion_ads)
         let left = '';
         let righttop = '';
         let rightbottm = '';

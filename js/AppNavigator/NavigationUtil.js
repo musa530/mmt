@@ -26,6 +26,24 @@ export default class NavigationUtil {
 		)
 	}
 	/**
+	 * 创建一个新的组件,进行压栈展示
+	 * @param {*} params 要传递的参数
+	 * @param {*} page 要压栈的页面名
+	 */
+	static goPush(params, page){
+		const navigation = NavigationUtil.navigation
+		if(!navigation) {
+			console.log('NavigationUtil.navigation can not be null');
+			return;
+		}
+		navigation.push(
+			page,
+			{
+				...params
+			}
+		)
+	}
+	/**
 	*返回上一页
 	*@param navigation
 	*/

@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, ScrollView, Image,TouchableOpacity,SectionList,Alert,TextInput,ImageBackground} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, RefreshControl, Image,TouchableOpacity,ActivityIndicator,Alert,TextInput,ImageBackground} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ShopHomePage from './shopinnerpages/ShopHomePage';
 import AllMallPage from './shopinnerpages/AllMallPage';
 import ShopCategoryPage from './shopinnerpages/ShopCategoryPage';
 import Toast from '../AppNavigator/ToastDemo'
+import NavigationUtil from '../AppNavigator/NavigationUtil';
 
 const {width, height} = Dimensions.get('window');
 
@@ -20,17 +21,26 @@ export default class ShopPage extends Component{
             routeName:'Home',
             newArr: TabArr,
             currentIndex:0,
-            id: -1,
-            store_info:[],
+            page_id: -1,
+            store_id:0,
+            store_info:[],//店铺信息
+            rec_goods_list:[],//推荐商品
+            goods_id:0,
+            isLoading:true,
+            error: false,
+            errorInfo: '',
+            isRefreshing: false,
+            inlarge: false
         }
     }
 
     componentDidMount(){
         // console.log(this.props.navigation.state.params);
-        Toast.show('数据加载中...')
+        // Toast.show('数据加载中...')
         let store_id = this.props.navigation.state.params.store_id
+        let page_id = this.props.navigation.state.params.page_id
         let store_name = this.props.navigation.state.params.store_name
-        this.setState({shopName: store_name})
+        this.setState({shopName: store_name, page_id,store_id})
         this._netFetch(store_id)
     }
 
@@ -44,15 +54,50 @@ export default class ShopPage extends Component{
         .then(res => {
             // console.log(res.result)
             let store_info = res.result.store_info
+            let rec_goods_list = res.result.rec_goods_list
+            // console.log(rec_goods_list)
             this.setState({
-                store_info
+                store_info,rec_goods_list,
+                isLoading: false,
+                isRefreshing: false
+            })
+            store_info = null;
+            rec_goods_list = null;
+        })
+        .catch(error => {
+            this.setState({
+                error: true,
+                errorInfo: error
             })
         })
-        .catch(error => console.log(error))
         
     }
 
-    renderSearch = () => {
+    renderLoadingView() {
+        return (
+            <View style={{marginTop:60,alignItems:'center'}}>
+                <ActivityIndicator
+                    animating={true}
+                    color='blue'
+                    size="small"
+                />
+                   <Text>数据加载中...</Text> 
+                
+            </View>
+        );
+    }
+
+    handleRefresh = () => {
+        this.setState({
+            isRefreshing: true,
+            store_info: [],
+            rec_goods_list: []
+        })
+
+        this._netFetch(this.state.store_id)
+    }
+
+    renderSearch = () => {//店铺搜索框
         const {store_info} = this.state
         return(
             <View>
@@ -93,7 +138,7 @@ export default class ShopPage extends Component{
         );
     }
 
-    renderShopInfo(){
+    renderShopInfo(){//店铺信息
         const {inLiked,store_info,newArr} = this.state;
         return(
             <View style={{marginTop:10,marginRight:8,marginLeft:8}}>
@@ -129,7 +174,7 @@ export default class ShopPage extends Component{
                                     <Text style={{color:'#666',fontSize:13}}>{this.state.shopName}</Text>
                                 </View>
                                 <View>
-                                    <Text style={{color:'#666'}}>{this.state.inLikedNum}人收藏</Text>
+                                    <Text style={{color:'#666'}}>{store_info.store_collect}人收藏</Text>
                                 </View>
                             </View>
                         </View>
@@ -146,7 +191,7 @@ export default class ShopPage extends Component{
         );
     }
 
-    renderShopTabs=(newArr)=>{
+    renderShopTabs=(newArr)=>{//店铺导航栏的切换
         const {currentIndex} = this.state;
         let activeStyle = {
             color: '#f00'
@@ -182,9 +227,8 @@ export default class ShopPage extends Component{
 
     _setId=(id)=>{
         this.setState({
-            currentIndex:id,
+            // goods_id:id,
         })
-        console.log(id)
     }
 
     // renderCategory(){
@@ -193,20 +237,31 @@ export default class ShopPage extends Component{
     //     );
     // }
 
-    renderShopPage=(index,id)=>{
+    _renderFullPage = () =>{
+        const {inlarge} = this.state
+        console.log('我被电击了')
+        this.setState({
+            inlarge:!inlarge
+        })
+    }
+
+    renderShopPage=(index,page_id,store_id)=>{//导航栏页面切换
+        const {rec_goods_list} = this.state;
+        
+        
         if (index==0) {
             return(
-                <ShopHomePage />
+                <ShopHomePage data={rec_goods_list} handleRefresh={() => this.handleRefresh()} refreshing={this.state.isRefreshing}/>
             );
         }
-        if (index==1||id==1) {
+        if (index==1) {
             return(
-                <AllMallPage />
+                <AllMallPage store_id={store_id} _renderFullPage={this._renderFullPage}/>
             );
         }
         if (index==2) {
             return(
-                <ShopCategoryPage _setId={this._setId.bind(this)}/>
+                <ShopCategoryPage store_id={store_id}/>
             );
         }
     }
@@ -214,17 +269,27 @@ export default class ShopPage extends Component{
     render(){
         // const {navigation} = this.props;
         // cosnt {state,setParams} = navigation;
-        const {currentIndex} = this.state;
+        const {currentIndex, page_id,store_id} = this.state;
+        // this.props.navigation.goBack()
+
+        if (this.state.isLoading && !this.state.error) {
+            return this.renderLoadingView()
+        }
         return(
             <View style={{flex:1}}>
-                <ScrollView>
+                {/* <ScrollView> */}
+                {this.state.inlarge ?
+                    null
+                    :
                     <View>
                         {this.renderSearch()}
                     </View>
+                }
+                    
                     <View>
-                        {this.renderShopPage(currentIndex,this.state.id)}
+                        {this.renderShopPage(currentIndex,page_id,store_id)}
                     </View>
-                </ScrollView>
+                {/* </ScrollView> */}
             </View>
         );
     }

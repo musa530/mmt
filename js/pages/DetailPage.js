@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, SectionList} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, SectionList, DeviceEventEmitter, FlatList, Alert, BackHandler} from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from '../AppNavigator/ToastDemo';
 import NavigationUtil from '../AppNavigator/NavigationUtil';
 import EmpityBox from './EmpityBox';
-import { log } from 'react-native-reanimated';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import LinearGradient from 'react-native-linear-gradient'
 
 const {width, height} = Dimensions.get('window');
 const titleWidth = width/5 * 4.5;
@@ -18,14 +18,6 @@ export default class DetailPage extends Component{
         super(props);
         this.state={
             share: '分享',
-            expressFee: '0.00',
-            address: '新疆乌鲁木齐',
-            evaluateNum: '7894',
-            userName: 'r***2',
-            shopName: '雪山果园旗舰店',
-            evaluateText:'宝贝收到了，很喜欢，物流快，包装很严谨，没有破损摔坏情况，很满意！卖家服务到位，服务态度好，很热情！良心商家，推荐推荐推荐！',
-            selected: '高 梦幻蓝咖啡杯碟',
-            kucun: 9, //库存
             mallCouont: 1, //商品数量
             inLike:false,
             animationIn:'slideInUp',
@@ -36,61 +28,182 @@ export default class DetailPage extends Component{
             modalVisible: false,//颜色选择模态场景是否可见
             parameterModal: false,//产品参数模态场景是否可见
             backdropTransitionOutTiming: 0,
-            swiperImg:'',
+            swiperImg:'',//商品图信息
             goods_info:[],//商品信息
             store_info:[],//店铺信息
-            goods_evaluate_info:[],//商品评价
-            index: 0,
+            spec_list:[],//规格商品ID列表
+            goods_evaluate_info:[],//商品评价信息
+            mb_body:[],//商品详细
+            goods_eval_list: [],//商品评价列表
+            goods_commend_list:[],//店铺推荐
+            temp_id: 0,//商品ID
+            show_more: false,//查看更多
+            specIndex: [],//选中属性的索引
+            shop_mall_image:'',
+            goods_spec:[],
+            bim:[],
+            outoutId:[],
+            list:[]
         }
     }
 
     //设置页眉
     static navigationOptions = () => ({
-        title: '详情页'
+        title: '详情页',
+        headerRight:() => (
+            <TouchableOpacity style={{marginRight: 13}}
+                onPress={() => Alert.alert('分享')}
+            >
+                <Image style={{width: 25, height: 25}} source={require('../../assest/images/fenxiang.png')}/>
+            </TouchableOpacity>
+        )
     });
+
+    UNSAFE_componentWillMount() {
+        let id = this.props.navigation.state.params.goods_id
+        this.setState({temp_id: id})
+        
+    }
+
+    returnData() {
+        
+    }
+
     componentDidMount() {
         // const {navigation} = this.props;
         // const {state, setParams} = navigation;
         // const {params} = state;
         // this.setState({index:0})
-        let id = this.props.navigation.state.params.goods_id
-        console.log('goods_id: ' + id)
-        this._netFetch(id)
-        Toast.show('数据读取中...')
+        // this.props.navigation.goBack()
+        const {temp_id} = this.state
+        this._netFetch(temp_id)
+        // BackHandler.addEventListener('hardwareBackPress',  ()=> {
+        //     this.props.navigation.goBack(); // 返回上一页
+        //     return true;
+        // });
+        
     }
+
+    componentWillUnmount(){
+
+    }
+
+    UNSAFE_componentWillUpdate(){}
 
     _netFetch = (id) => {
         fetch(`https://satarmen.com/api/goods/goods_detail?goods_id=${id}&key=null`)
         .then(response => response.json())
         .then((res) => {
             console.log('res.result')
-            let goods_evaluate_info = res.result.goods_evaluate_info
-            let goods_info = res.result.goods_info
-            let goods_image = res.result.goods_image
-            let store_info = res.result.store_info
-            console.log(typeof goods_image)
+            let goods_evaluate_info = res.result.goods_evaluate_info//商品评论信息
+            let goods_info = res.result.goods_info//商品信息
+            let goods_image = res.result.goods_image//商品图片
+            let store_info = res.result.store_info//店铺信息
+            let mb_body = res.result.mb_body//详情信息
+            let goods_eval_list = res.result.goods_eval_list//评论信息列表
+            let goods_commend_list = res.result.goods_commend_list//店铺推荐列表
+            let spec_list = res.result.spec_list
+
+            let goods_spec = goods_info.goods_spec//获取当前商品的key和颜色值
+
+            let list = res.result
+
+            let specIndex = []
+            let shop_mall_image = ''
+            for(let k in goods_spec){
+                
+                specIndex.push(k);
+            }
+            let b = goods_image.split(",")
+            shop_mall_image = b[0]
+            specIndex = specIndex.join("|")
+            // console.log(temp_key)
+            // console.log(specIndex)
+            let c = new Array()
+            c = specIndex.split("|")
+            // console.log(c)
+
             this.setState({
-                swiperImg:goods_image, goods_info, store_info,goods_evaluate_info
+                swiperImg:goods_image, 
+                goods_info, 
+                store_info,
+                goods_evaluate_info,
+                mb_body,
+                goods_eval_list,
+                goods_commend_list,
+                spec_list,
+                specIndex,
+                shop_mall_image,
+                goods_spec,
+                bim: c,
+                list
             })
         })
         .catch(error => console.log(error))
     }
 
-    renderTitle=(title, price, salenum, freight, address) => {//商品标题价格快递月销地址
+
+    daoJiSHi = () => {
+        const {goods_info} = this.state
+        let promotion_end_time = goods_info.promotion_end_time//活动结束时间
+        // let unixDate = new Date(promotion_end_time * 1000);
+        // let commonDate = unixDate.toLocaleString()
+        // console.log(commonDate)
+        let nowDate = Date.parse(new Date().getTime()/1000);//获取当前时间戳
+        // let now = Date.parse(new Date());//获取当前时间戳
+        let subDate = promotion_end_time - nowDate;
+        if(subDate !== undefined) {
+            var day = Math.floor(subDate / 1000 / 60 / 60 / 24); //天
+            subDate = subDate % (1000 * 60 * 60 * 24)
+            var hour = Math.floor(subDate / 1000 / 60 / 60); //小时
+            subDate = subDate % (1000 * 60 * 60)
+            var min = Math.floor(subDate / 1000 / 60); //分钟
+            subDate = subDate % (1000 * 60)
+            var second = Math.floor(subDate / 1000)
+        }
+        setTimeout(() => {
+            console.log(day + 'day' + hour + 'hour' + min + 'min' + second + 'second')
+        }, 1000);
+        
+    }
+
+    renderTitle=(title, price, salenum, freight, address,promotion_type,promotion_price,typeTitle) => {//商品标题价格快递月销地址
+        let type = ''
+        if(promotion_type == 'xianshi'){
+            type = '限时'
+        }
+        if(promotion_type == 'groupbuy'){
+            type = typeTitle
+        }
+
+        
+        
+        // console.log(promotion_type)
         return (
             <View style={{paddingRight: 5, paddingLeft: 5, backgroundColor: 'white', top: -13, paddingTop: 5}}>
                 <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
+                    
                     <Text numberOfLines={2}
                         style={{width: titleWidth, flex: 1, color: '#333', fontSize: 15}}
-                    >{title}</Text>
-                    <TouchableOpacity style={{alignItems: 'center',marginLeft: 5, marginRight: 3}}>
-                        <Image style={{width: 25, height: 25}} source={require('../../assest/images/fenxiang.png')}/>
-                        <Text style={{color: '#999', fontSize: 12}}>{this.state.share}</Text>
-                    </TouchableOpacity>
+                    >  <Text style={{backgroundColor: 'red',color:'#fff',fontWeight:'bold'}}>{type}</Text>  {title}</Text>
                 </View>
-                <View style={{marginBottom: 10}}>
-                    <Text style={{fontSize: 22,color:'red'}}>￥{price}</Text>
-                </View>
+                {promotion_type ==  undefined ?
+                    <View style={{marginBottom: 10}}>
+                        <Text style={{fontSize: 22,color:'red'}}>￥{price}</Text>
+                    </View>
+                    :
+                    <View style={{marginBottom: 10,flexDirection:'row',alignItems:"center"}}>
+                        <Text style={{fontSize: 22,color:'red'}}>￥{promotion_price}</Text>
+                        <Text style={{fontSize: 20,color:'#cdcdcd',marginLeft:8,textDecorationLine:'line-through'}}>{price}</Text>
+                    </View>
+                }
+                {this.daoJiSHi()}
+                {/* <Text style={{color:'red'}}>
+                    <Text>{day}:</Text>
+                    <Text>{hour}:</Text>
+                    <Text>{min}:</Text>
+                    <Text>{second}</Text>
+                </Text> */}
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3}}>
                     <Text style={{color: '#666', fontSize: 13}}>快递：{freight}</Text>
                     <Text style={{color: '#666', fontSize: 13}}>月销 {salenum}</Text>
@@ -193,36 +306,85 @@ export default class DetailPage extends Component{
         );
     }
 
-    renderEvaluate(evaluate) {//商品评价部分
+    renderEvaluate(evaluate,evaluate_list) {//商品评价部分
+        console.log(evaluate_list)
         return(
-            <View style={{backgroundColor: 'white',padding: 5, marginTop: 10}}>
-                <View style={{marginTop: 5, marginBottom: 5}}>
-                    <Text style={{fontSize: 18}}>商品评价  ({evaluate.all})</Text>
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
-                    <View style={{backgroundColor: '#ccc', width: 40, height: 40, borderRadius: 999}}></View>
-                    <Text style={{color: '#666', marginLeft: 8}}>{this.state.userName}</Text>
-                </View>
-                <View style={{marginTop: 5, marginBottom: 5}}>
-                    <Text style={{color: '#333'}} numberOfLines={2}>{this.state.evaluateText}</Text>
-                </View>
-                <View style={{arginBottom: 5}}>
-                    <Text style={{color: '#cdcdcd', fontSize: 13}} numberOfLines={1}>颜色分类: {this.state.selected}</Text>
-                </View>
-                <TouchableOpacity style={{alignItems: 'center', margin: 8}}
-                    onPress={()=>{
-                        NavigationUtil.goPage({
-                            navigation: this.props.navigation
-                        }, "AllEvaluate")
-                    }}
-                >
-                    <Text style={{padding: 5, backgroundColor:'#8a8a8a', color: 'white'}}>查看全部评价</Text>
-                </TouchableOpacity>
+            <View>
+                {evaluate.all == 0 ?
+                    null
+                    :
+                    <View style={{backgroundColor: 'white',padding: 5, marginTop: 10}}>
+                        <View style={{marginTop: 5, marginBottom: 5}}>
+                            <Text style={{fontSize: 18}}>商品评价  ({evaluate.all})</Text>
+                        </View>
+                        {
+                            evaluate_list.map((item, index) =>{
+                                if(index == 0){
+                                    return(
+                                        <View key={index}>
+                                            <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
+                                                <View style={{ width: 40, height: 40, borderRadius: 999, alignItems:'center',justifyContent:'center'}}>
+                                                    <Image source={require('../../assest/user.png')} style={{width:30,height:30}}/>
+                                                </View>
+                                                <Text style={{color: '#666', marginLeft: 8,width:60}} numberOfLines={1} ellipsizeMode='middle'>{item.geval_frommembername}</Text>
+                                            </View>
+                                            <View style={{marginTop: 5, marginBottom: 5}}>
+                                                <Text style={{color: '#333'}} numberOfLines={2}>{item.geval_content}</Text>
+                                            </View>
+                                            <View style={{marginBottom: 5,flexDirection:'row',alignItems:'center'}}>
+                                                <Text style={{color: '#cdcdcd', fontSize: 13}}>颜色分类: </Text>
+                                                <Text style={{color: '#cdcdcd', fontSize: 13,width:80}} numberOfLines={1} ellipsizeMode='head'>{item.geval_goodsname}</Text>
+                                            </View>
+                                            
+                                        </View>
+                                    )
+                                }
+                                
+                            })
+                        }
+                        <TouchableOpacity style={{alignItems: 'center', margin: 8}}
+                            onPress={()=>{
+                                NavigationUtil.goPage({
+                                    navigation: this.props.navigation,
+                                    evaluate_list//传出商品评价列表
+                                }, "AllEvaluate")
+                            }}
+                        >
+                            <Text style={{padding: 5, backgroundColor:'#8a8a8a', color: 'white'}}>查看全部评价</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
             </View>
         );
     }
 
-    renderShopInfo = (name,logo, store_credit) => {//店铺信息
+    renderCommendList = (commend_list) => {//店铺推荐渲染
+        let itemWidth = width/3 - 6
+        let imageWidth = itemWidth - 3
+        return commend_list.map((item, index) => {
+            return (
+                <TouchableOpacity style={{width:itemWidth,marginBottom:10}}
+                    key={index}
+                    onPress={()=>{
+                        NavigationUtil.goPush({
+                            navigation: this.props.navigation,
+                            goods_id: item.goods_id
+                        },"DetailPage")
+                    }}
+                >
+                    <Image source={{uri: item.goods_image_url}} style={{borderRadius:3,width:imageWidth,height:imageWidth}}/>
+                    <View style={{marginTop:10}}>
+                        <Text numberOfLines={2} style={{color:'#333'}}>{item.goods_name}</Text>
+                    </View>
+                    <View style={{marginTop:10}}>
+                        <Text numberOfLines={2} style={{color:'red'}}>￥{item.goods_price}</Text>
+                    </View>
+                </TouchableOpacity>
+            );
+        })
+    }
+
+    renderShopInfo = (store_name,logo, store_credit, store_id,commend_list) => {//店铺信息
         // let desccredit = store_credit.store_desccredit//宝贝描述
         // let servicecredit = store_credit.store_servicecredit//卖家服务
         // let deliverycredit = store_credit.store_deliverycredit//物流服务
@@ -236,61 +398,104 @@ export default class DetailPage extends Component{
         let itemStyle = {flexDirection:'row',alignItems:'center'}
 
         return(
-            <View style={{backgroundColor: '#fff', marginTop: 10, padding: 5}}>
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{width: 60, height: 60}}>
-                        <Image source={{uri:logo}} style={{width:60,height:60}}/>
-                    </View>
-                    <Text style={{color: '#f00', marginLeft: 10, marginTop: 8, fontSize: 15}}>{name}</Text>
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10}}>
-                    {
-                        tempArr.map((item, index) => {
-                            return (
-                                <View style={itemStyle} key={index}>
-                                    <Text style={{color: '#666', fontSize: 15}}>{item.text} </Text>
-                                    <Text style={{color: '#666', fontSize: 15}}>{item.credit}</Text>
-                                    <Text style={{color: '#f00', fontSize: 15}}>{item.percent_text}</Text>
-                                </View>
-                            )
-                            
-                        })
-                    }
-                    
-                </View>
-                <View style={{width: width, height: 20}}></View>
-                <View style={{flexDirection: 'row', justifyContent: 'center', marginBottom: 10}}>
-                    <TouchableOpacity style={{backgroundColor: '#8a8a8a', padding: 5}}>
-                        <Text style={{color: '#fff', fontSize: 15}}>查看分类</Text>
-                    </TouchableOpacity>
+            <View>
+                <View style={{backgroundColor: '#fff', marginTop: 10, padding: 5}}>
+                    <View style={{flexDirection: 'row',alignItems:'flex-start',justifyContent:'space-between'}}>
+                        <View style={{flexDirection:'row',width:buttonWidth}}>
+                            <View style={{}}>
+                                <Image source={{uri:logo}} style={{width:60,height:60}}/>
+                            </View>
+                            <Text style={{color: '#f00', marginLeft: 10, marginTop: 5, fontSize: 15,width:buttonWidth-60}} numberOfLines={1}>{store_name}</Text>
+                        </View>
+                        
+                        <View style={{width:buttonWidth,flexDirection:'row',justifyContent:'flex-end'}}>
+                            <TouchableOpacity style={{padding: 5,marginLeft:20,borderWidth:1,borderRadius:6,borderColor:'red'}}
+                                onPress={()=>{
+                                    NavigationUtil.goPage({
+                                        navigation: this.props.navigation,
+                                        store_name,store_id,
+                                        page_id: 1
+                                    },"ShopPage")
+                                }}
+                            >
+                                <Text style={{color: 'red', fontSize: 13}}>全部宝贝</Text>
+                            </TouchableOpacity>
 
-                    <TouchableOpacity style={{backgroundColor: '#8a8a8a', padding: 5, marginLeft: 20}}>
-                        <Text style={{color: '#fff', fontSize: 15}}>进店逛逛</Text>
-                    </TouchableOpacity>
+                            <TouchableOpacity style={{backgroundColor: '#f00', padding: 5, marginLeft: 10,borderRadius:6}}
+                                onPress={()=>{
+                                    NavigationUtil.goPage({
+                                        navigation: this.props.navigation,
+                                        store_name,store_id
+                                    },"ShopPage")
+                                }}
+                            >
+                                <Text style={{color: '#fff', fontSize: 13}}>进店逛逛</Text>
+                            </TouchableOpacity>
+                        </View>
+                        
+                    </View>
+                    <View style={{width: width, height: 20}}></View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10,marginBottom:10}}>
+                        {
+                            tempArr.map((item, index) => {
+                                return (
+                                    <View style={itemStyle} key={index}>
+                                        <Text style={{color: '#666', fontSize: 15}}>{item.text} </Text>
+                                        <Text style={{color: '#666', fontSize: 15}}>{parseFloat(item.credit).toFixed(1)}</Text>
+                                        <Text 
+                                            style={{
+                                                color: '#f00',marginLeft:3,
+                                                fontSize: 13,
+                                                backgroundColor:'#FFF1EB',
+                                                borderRadius:999,
+                                                alignItems:'center',justifyContent:'center'
+                                            }}
+                                        >{item.percent_text}</Text>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+                </View>
+                <View style={{height: 50, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{fontSize: 16, color: '#fff'}}>———— 店铺推荐 ————</Text>
+                </View>
+                <View style={{flexDirection:'row',justifyContent:'space-between',flex:1,flexWrap:'wrap',paddingTop:5,paddingLeft:5,paddingRight:5}}>
+                    {this.renderCommendList(commend_list)}
                 </View>
             </View>
         );
     }
 
-    renderDisplay() {//商品详细图展示
+    renderDisplay = () => {//商品详细图展示
+        const {mb_body,show_more} = this.state
+        let detailImgStyle = show_more ? {} : {height: width*3}
         return(
             <View>
-                <View style={{height: 60, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center'}}>
-                    <Text style={{fontSize: 18, color: '#fff'}}>商品详细</Text>
+                <View style={{height: 50, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{fontSize: 16, color: '#fff'}}>———— 商品详细 ————</Text>
                 </View>
-                {/* 添加网图（长图） */}
-                {/* <Image source={{uri: 'https://satarmen.com/uploads/home/store/goods/554/554_2019122712562410694.png'}}
-                    style={{width: width, height: 1600, resizeMode: 'stretch'}}
-                /> */}
-                <Image source={{uri: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=186611946,905648253&fm=26&gp=0.jpg'}}
-                    style={{width: width, height: width, resizeMode: 'stretch'}}
-                />
-                <Image source={{uri: 'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=129639009,1876542785&fm=26&gp=0.jpg'}}
-                    style={{width: width, height: width, resizeMode: 'stretch'}}
-                />
-                <Image source={{uri: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1017050554,3701300423&fm=26&gp=0.jpg'}}
-                    style={{width: width, height: width, resizeMode: 'stretch'}} 
-                />
+                <View style={[detailImgStyle,{backgroundColor:'#eee',alignItems:'center'}]}>
+                    <FlatList
+                        data={mb_body}
+                        renderItem={(data)=><Image source={{uri: data.item.value}}
+                            style={{width: width-6, height: width}}/>
+                        }
+                        ItemSeparatorComponent={() => <View/>}
+                        ListHeaderComponent={()=><View/>}
+                        ListFooterComponent={() => <View/>}
+                        keyExtractor={(item,index) => 'key' + index + item}
+                    />
+                    
+                </View>
+                <LinearGradient colors={["#eee","#f7f7f7","#ccc"]} style={{marginTop:12}}>
+                        <TouchableOpacity style={{alignItems:'center',flexDirection:'row',justifyContent:'center',paddingTop:8,paddingBottom:8}}
+                            onPress={()=>this.setState({show_more:!show_more})}
+                        >
+                            <Text style={{fontSize:16}}>{show_more? '收起查看' : '查看更多'}</Text>
+                            <Text style={{fontSize:10}}>{show_more? '∧' : '∨'}</Text>
+                        </TouchableOpacity>
+                    </LinearGradient>
             </View>
         );
     }
@@ -334,55 +539,78 @@ export default class DetailPage extends Component{
         })
     }
 
-    sectionCmpn = (item) => {
-        console.log(item)
+    shouldComponentUpdate() {
+        return true
+    }
+
+    
+    
+    _netFetchAgain = (in_id,specIndex,c,goods_spec) => {//根据所选规格重新发起网络请求
+        this.setState({
+            shop_mall_image: this.state.list.spec_image[in_id],
+            specIndex,
+            bim: c,
+            goods_spec,
+        })
+        let idss = this.state.list.spec_list[specIndex]
+        this.setState({
+            temp_id: idss
+        })
+        this._netFetch(idss)
+    }
+
+
+    renderItem = (info) => {//渲染规格名称
+        const {goods_info} = this.state;
+        let spec_value = goods_info.spec_value
+        let out_id = info.item.out_id
         return(
-            <View>
-                <Text>1</Text>
-            </View>
+            <FlatListItem 
+                spec_value={spec_value} 
+                out_id={out_id} 
+                info={info} 
+                bim={this.state.bim} 
+                goods_info={this.state.goods_info} 
+                goods_spec={this.state.goods_spec} 
+                _netFetchAgain={this._netFetchAgain}
+            />
         );
     }
 
-    renderItem = (cell) =>{
-        return(
-            <View>
-                <Text>1</Text>
-            </View>
+    renderSpecList = (spec_name) => {//渲染规格标题
+        
+        let tempspecName = new Array()
+        for(let item in spec_name) {
+            let tempObj = new Object()
+            tempObj.out_id = item
+            tempObj.out_value = spec_name[item]
+            tempspecName.push(tempObj)
+        }
+        return (
+            <FlatList
+                data={tempspecName}
+                renderItem={(info) => this.renderItem(info)}
+                ItemSeparatorComponent={()=><View/>}
+                ListHeaderComponent={()=><View/>}
+                ListFooterComponent={()=><View/>}
+                keyExtractor={(item, index) => 'key' + index + item}
+            />
         );
     }
 
-    renderSelectModal = (storage, price, url, spec_name, spec_value) => {//选择颜色和分类模板
+    renderSelectModal = (storage, price, spec_name,promotion_type,promotion_price) => {//选择颜色和分类模板
+        console.log(promotion_type)
+        console.log(promotion_price)
         let innerContainerTransparentStyle = { backgroundColor: '#fff', padding: 5 }
 
         let paddingLR = { paddingLeft: 12, paddingRight: 12 }
 
-        let specArr = []
-        for (let i in spec_name) {
-            let tempObj = {}
-            tempObj.name = spec_name[i]
-            let innerArr = []
-            for (let j in spec_value) {
-                console.log(spec_value[j])
-                if (j == i) {
-                    let innerObj = spec_value[j]
-                    innerArr.push(innerObj)
-                }
-            }
-            if(innerArr != ''){
-                tempObj.item = innerArr
-            }
-            
-            specArr.push(tempObj)
-        }
-        console.log(specArr)
         return(
             <Modal
                 animationIn={this.state.animationIn}
                 animationOut={this.state.animationOut}
                 backdropOpacity={this.state.backdropOpacity}
                 backdropColor={this.state.backdropColor}
-                onSwipeComplete={() => this._setModalVisible(false)}
-                swipeDirection={this.state.swipeDirection}
                 isVisible={this.state.modalVisible}
                 onBackButtonPress={() => this._setModalVisible(false)}
                 onBackdropPress={()=> this._setModalVisible(false)}
@@ -391,68 +619,76 @@ export default class DetailPage extends Component{
             >
                 <View style={{flex:1, justifyContent:'flex-end'}}>
                     <View style={[innerContainerTransparentStyle,styles.modalInnerContainer]}>
+                        <View style={{flexDirection: 'row',}}>
+                            <View style={{width: 100, height: 100, borderWidth: 1, borderColor: '#eee'}}>
+                                <Image
+                                    style={{width: 99, height: 99}}
+                                    source={{uri: this.state.shop_mall_image}}
+                                />
+                            </View>
+                            
+                            
+                            <View style={{justifyContent: 'center', marginLeft: 15}}>
+                                { promotion_type == undefined ? 
+                                    <View style={{marginBottom: 30, flexDirection: 'row'}}>
+                                        <Text style={{fontSize: 18}}>价格: </Text>
+                                        <Text style={{fontSize: 18, color: '#f00'}}>￥{price}</Text>
+                                    </View>
+                                    :
+                                    <View style={{marginBottom: 30, flexDirection: 'row'}}>
+                                        <Text style={{fontSize: 18}}>价格: </Text>
+                                        <Text style={{fontSize: 18, color: '#f00'}}>￥{promotion_price}</Text>
+                                    </View>
+                                }
+                                
+                                <Text style={{color: '#666'}}>库存：{storage}件</Text>
+                            </View>
+                            <View style={{flex:1,alignItems:'flex-end'}}>
+                                <TouchableOpacity
+                                    onPress={()=>{
+                                        this._setModalVisible(false)
+                                    }}
+                                    style={{borderRadius: 999,width: 20, height: 20,
+                                        justifyContent: 'flex-end', alignItems: 'center',marginRight:10,
+                                        borderWidth: 1, borderColor: '#f03'
+                                    }}
+                                >
+                                    <Text style={{fontSize:13, color: '#f03', fontWeight: 'bold',}}>×</Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                        </View>
                         <ScrollView>
                         <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
-                            <View style={{flexDirection: 'row',}}>
-                                <Image
-                                    style={{width: 100, height: 100, resizeMode: 'stretch', borderWidth: 1, borderColor: '#eee'}}
-                                    source={{uri: url}}
-                                />
-                                <View style={{justifyContent: 'center', marginLeft: 15}}>
-                                    <View style={{marginBottom: 30, flexDirection: 'row'}}>
-                                        <Text style={{fontSize: 18}}>价格: ￥</Text>
-                                        <Text style={{fontSize: 18, color: '#f00'}}>{price}</Text>
-                                    </View>
-                                    <Text style={{color: '#666'}}>库存：{storage}件</Text>
-                                </View>
-                            </View>
-                            <TouchableOpacity
-                                onPress={()=>{
-                                    this._setModalVisible(false)
-                                }}
-                                style={{borderRadius: 999,width: 20, height: 20,
-                                    justifyContent: 'center', alignItems: 'center',marginRight:10,
-                                    borderWidth: 1, borderColor: '#f03'
-                                }}
-                            >
-                                <Text style={{fontSize:13, color: '#f03', fontWeight: 'bold'}}>×</Text>
-                            </TouchableOpacity>
+                            
+                            
                         </View>
                         <View>
-                            <SectionList
-                                renderSectionHeader={this.sectionCpm}
-                                renderItem={(data) => this.renderItem(data)}
-                                sections={specArr}
-                                ItemSeparatorComponent={()=><View/>}
-                                ListHeaderComponent={() => <View/>}
-                                ListFooterComponent={()=><View/>}
-                                showsVerticalScrollIndicator={false}
-                                keyExtractor={(item, index) => 'key' + index + item}
-                            />
+                            {this.renderSpecList(spec_name)}
                             
-                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Text style={{color:'#666',margin: 8, fontSize: 16, flex: 1}}>数量：</Text>
-                                <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
-                                    onPress={()=>{
-                                        this.subCount(this.state.mallCouont)
-                                    }}
-                                >
-                                    <Text style={{fontSize: 16}}>-</Text>
-                                </TouchableOpacity>
-                                <View style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}>
-                                    <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.mallCouont}</Text>
-                                </View>
-                                <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
-                                    onPress={()=>{
-                                        this.addCount(this.state.mallCouont)
-                                    }}
-                                >
-                                    <Text style={{fontSize: 16}}>+</Text>
-                                </TouchableOpacity>
-                            </View>
+                            
                         </View>
                         </ScrollView>
-
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Text style={{color:'#666',margin: 8, fontSize: 16, flex: 1}}>数量：</Text>
+                            <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
+                                onPress={()=>{
+                                    this.subCount(this.state.mallCouont)
+                                }}
+                            >
+                                <Text style={{fontSize: 16}}>-</Text>
+                            </TouchableOpacity>
+                            <View style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}>
+                                <Text style={{fontSize: 16, fontWeight: "bold"}}>{this.state.mallCouont}</Text>
+                            </View>
+                            <TouchableOpacity style={[{padding: 3, borderWidth: 1,borderColor: '#eee'}, paddingLR]}
+                                onPress={()=>{
+                                    this.addCount(this.state.mallCouont)
+                                }}
+                            >
+                                <Text style={{fontSize: 16}}>+</Text>
+                            </TouchableOpacity>
+                        </View>
                         <View style={{flexDirection: 'row', marginTop: 20}}>
                             <TouchableOpacity 
                                 style={{
@@ -664,7 +900,7 @@ export default class DetailPage extends Component{
     }
 
     render() {
-        const {goods_info, store_info,goods_evaluate_info} = this.state//获取商品信息
+        const {goods_info, store_info,goods_evaluate_info,goods_eval_list,goods_commend_list} = this.state//获取商品信息
         const title = goods_info.goods_name;//商品名称
         const price = goods_info.goods_price;//商品价格
         const salenum = goods_info.goods_salenum//商品销量
@@ -678,22 +914,40 @@ export default class DetailPage extends Component{
         const store_logo = store_info.store_logo//店铺Logo
         const store_id = store_info.store_id//店铺ID
         const store_credit = store_info.store_credit//店铺评分
-        console.log(evaluate)
+        const promotion_type = goods_info.promotion_type//活动类型
+        const promotion_price = goods_info.promotion_price//活动价格
+        const typeTitle = goods_info.title//活动标签
+        
         return(
             <View style={styles.container}>
-                <ScrollView>
+                <ScrollView
+                    ref={(view) => this.scrollview = view}
+                    // onScroll={(e)=>this.contentOffset(e)}
+                >
+
                     {this.renderSwiper()}
-                    {this.renderTitle(title, price,salenum,freight,address)}
+                    {this.renderTitle(title, price,salenum,freight,address,promotion_type,promotion_price,typeTitle)}
                     {this.renderCoupon()}
                     {this.renderSelect()}
-                    {this.renderEvaluate(evaluate,store_id)}
-                    {this.renderShopInfo(store_name, store_logo, store_credit)}
+                    {this.renderEvaluate(evaluate,goods_eval_list)}
+                    {this.renderShopInfo(store_name, store_logo, store_credit,store_id,goods_commend_list,)}
                     {this.renderDisplay()}
-                    {this.renderSelectModal(storage, price,'https://satarmen.com/uploads/home/store/goods/544/544_2019122413355384699_240.jpg', spec_name, spec_value)}
+                    {this.renderSelectModal(storage, price, spec_name, promotion_type,promotion_price)}
                     {this.renderParameter()}
                     <EmpityBox/>
+                    
                 </ScrollView>
-                {this.renderFooterComp(store_id,store_name)}
+                {/* {this.state.isToTop ?
+                    <TouchableOpacity style={styles.toTopStyle}
+                        onPress={() => this.scrollview.scrollTo({x: 0, y: 0, animated:true})}
+                    >
+                        <Image source={require('../../assest/to-top.png')} style={{width:25,height:25}}/>
+                        <Text style={{color:'red'}}>TOP</Text>
+                    </TouchableOpacity>
+                    :
+                    null
+                }*/}
+                {this.renderFooterComp(store_id,store_name)} 
             </View>
         );
     }
@@ -719,6 +973,142 @@ class ParamItem extends Component{
                         <Text style={{color: '#666', flexWrap: 'wrap'}}>{this.props.right}</Text>
                     </View>
                 </View>
+            </View>
+        );
+    }
+}
+
+class FlatListItem extends Component{
+    constructor(props) {
+        super(props);
+        this.state = {
+            info:{}
+        }
+    }
+
+    setGoodsId = (in_id) => {
+        // console.log(this.props.info.item.out_id)
+        let out_id = this.props.info.item.out_id
+        // console.log(in_id)
+        let goods_spec = this.props.goods_spec
+        let attrs = this.props.goods_info.spec_value[out_id]
+        // console.log(spec_name)
+        // console.log(goods_spec)
+        let specIndex = []
+
+
+        
+        for(let k in attrs){
+            // console.log(attrs[k])
+            // console.log(goods_spec[k])
+            if(typeof (goods_spec[k]) !== 'undefined'){
+                // console.log(goods_spec[k])
+                delete goods_spec[k]
+                // console.log(goods_spec)
+                goods_spec[in_id] = attrs[in_id]
+                break
+            }
+        }
+        // console.log(spec_value)
+        
+        // console.log(goods_spec)
+
+        for(let k in goods_spec) {
+            specIndex.push(k)
+        }
+        specIndex = specIndex.join('|')
+        let c = new Array()
+        c = specIndex.split("|")
+        this.props._netFetchAgain(in_id,specIndex,c,goods_spec)
+        
+    }
+
+    render(){
+        let spec_value = this.props.spec_value;
+        let out_id = this.props.out_id;
+        let info = this.props.info
+        let bim = this.props.bim
+        let tempspecValue = new Array()
+        for(let id in spec_value[out_id]){
+            // console.log(id + '|' + out_id)
+            let tempInObj = new Object()
+            tempInObj.in_id = id
+            tempInObj.in_value = spec_value[out_id][id]
+            tempspecValue.push(tempInObj)
+        }
+        // console.log(info)
+        this.setState=({info})
+        return(
+            <View key={info.item.out_id} style={{padding:8}}>
+                <Text style={{color:'#333'}}>{info.item.out_value}:</Text>
+                <FlatList
+                    ref={(flist) => {this.flat = flist}}
+                    data={tempspecValue}
+                    renderItem={(child) => <ItemChild child={child} bim = {bim} setGoodsId={this.setGoodsId}/>}
+                    ItemSeparatorComponent={()=><View/>}
+                    ListHeaderComponent={()=><View/>}
+                    ListFooterComponent={()=><View/>}
+                    keyExtractor={(item, index) => 'key' + index + item}
+                    horizontal={true}
+                />
+                
+            </View>
+        );
+    }
+}
+
+class ItemChild extends Component{
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        }
+    }
+
+    renderMap = child => {
+        let item = child.item
+        let tempArr = new Array();
+        for(let i in item){
+            if (i == 'in_value')
+            {
+                console.log(item[i])
+                tempArr.push(
+                    <TouchableOpacity>
+
+                    </TouchableOpacity>
+                )
+            }
+            
+        }
+    }
+
+    render(){
+        let child = this.props.child
+        let bim = this.props.bim
+        let tintStyle = {padding:3,paddingLeft:5,paddingRight:5,borderRadius:3,borderColor:'#eee',borderWidth: 1}
+        let activeStyle = {padding:3,paddingLeft:5,paddingRight:5,borderRadius:3,backgroundColor: 'red',color: '#fff'}
+        let isActive = false
+        for(let i in bim) {
+            if(bim[i] == child.item.in_id){
+                isActive = true
+            }
+        }
+        return(
+            <View
+                ref={(v) => {this.view = v}}
+                key={child.item.in_id}
+                style={{marginTop:8,height:30}}
+            >
+                {/* {this.renderMap(child)} */}
+                <TouchableOpacity
+                     
+                    style={{marginRight:8,marginBottom:5}}
+                    onPress={() => {
+                        this.props.setGoodsId(child.item.in_id)
+                    }}
+                >
+                    <Text style={isActive ? activeStyle : tintStyle}>{child.item.in_value}</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -758,5 +1148,5 @@ const styles = StyleSheet.create({
     likeImageStyle:{
         width:26,
         height:26
-    }
+    },
 });

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Alert, RefreshControl,ActivityIndicator} from 'react-native';
 import SwiperList from './homeCmps/Swiper';
 import Circle from './homeCmps/Circle';
 import TopSreach from './homeCmps/TopSreach';
@@ -29,17 +29,35 @@ export default class Home extends Component{
             good_products:[],//热门推荐
             hot_products:[],//销量排行
             recently_products:[],//全部商品
+            refreshing: false,
+            isLoading: true,
+            error: false,
+            errorInfo: ''
         }
     }
 
+    
+
     UNSAFE_componentWillMount() {
-        Toast.show('数据读取中...')
+        // Toast.show('数据读取中...')
     }
 
     componentDidMount() {
+        // const unsubscribe = navigation.addListener('tabPress', e => {
+        //     // Prevent default behavior
+        //     e.preventDefault();
+        
+        //     // Do something manually
+        //     // ...
+        //   });
+        
+         
         this._netWorkFetch()
-        this._netWorkFetchSecond()
+        this._netWorkFetchSecond() 
+        // return unsubscribe;
     }
+
+    
 
     _netWorkFetch = () => {
         //轮播图、动态广告图、三张广告图
@@ -49,9 +67,20 @@ export default class Home extends Component{
             let banners = responseJson.result.banners
             let floor_ads = responseJson.result.floor_ads
             let promotion_ads = responseJson.result.promotion_ads
-            this.setState({banners, floor_ads, promotion_ads})
+            this.setState({
+                banners, 
+                floor_ads, 
+                promotion_ads,
+                isLoading: false
+            })
+            banners = null,
+            floor_ads = null,
+            promotion_ads = null
         }).catch((error) => {
-            console.log(error)
+            this.setState({
+                error: true,
+                errorInfo: error
+            })
         })
 
         
@@ -65,19 +94,71 @@ export default class Home extends Component{
             let hot_products = responseJson.result.hot_products//销量排行
             let recently_products = responseJson.result.recently_products//全部商品
             // console.log(good_products)
-            this.setState({good_products, hot_products, recently_products})
+            this.setState({
+                good_products, 
+                hot_products, 
+                recently_products,
+                refreshing:false,
+                isLoading:false
+            })
+            good_products=null, 
+            hot_products=null,
+            recently_products=null
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+            this.setState({
+                error: true,
+                errorInfo: error
+            })
+        })
+    }
+
+    renderLoadingView() {
+        return(
+            <View style={{marginTop:60,alignItems:'center'}}>
+                <ActivityIndicator
+                    animating={true}
+                    color='blue'
+                    size="small"
+                />
+                   <Text>数据加载中...</Text> 
+                
+            </View>
+        );
+    }
+
+    _refresh = () => {
+        this.setState({refreshing: true})
+        this._netWorkFetch()
+        this._netWorkFetchSecond()
     }
 
     render() {
+        const {refreshing} = this.state;
+        if (this.state.isLoading && !this.state.error) {
+            return this.renderLoadingView()
+        }
+
         return(
-            <ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        size={RefreshControl.SIZE.DEFAULT}
+                        enabled={true}
+                        colors={['cyan','red','black']}
+                        tintColor={'#f40'}
+                        refreshing={refreshing}
+                        onRefresh={this._refresh}
+                        title={'数据加载中...'}
+                        progressViewOffset={15}
+                    />
+                }
+            >
                 <View style={styles.container}>
                     <Circle/>
                     <TopSreach/>
                     <View style={styles.swiper_list}>
-                        <SwiperList height={200} banners = {this.state.banners}/>
+                        <SwiperList height={180} banners = {this.state.banners}/>
                     </View>
                     <NavigationBar/>
                     <DynamicPic floor_ads={this.state.floor_ads}/>
@@ -124,8 +205,11 @@ const styles = StyleSheet.create({
       fontSize: 18
     },
     swiper_list: {
-        width: width,
+        width: width - 10,
         height: 200,
         marginTop: -130,
+        marginLeft:5,
+        marginRight:5,
+        borderRadius:3
     },
 });

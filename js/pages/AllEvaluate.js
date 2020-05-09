@@ -52,10 +52,30 @@ export default class AllEvaluate extends Component{
     }
 
     render(){
+        console.log(this.props.navigation.state.params.evaluate_list)
+        let evaluate_list = this.props.navigation.state.params.evaluate_list
         return(
             <View style={{flex: 1, backgroundColor: '#fff', padding: 5}}>
                 <ScrollView>
-                    {this.renderEvaluate()}
+                    {
+                        evaluate_list.map((item, index) => {
+                            return(
+                                <View style={{borderColor: '#eee', borderBottomWidth: 1, paddingBottom: 8}}>
+                                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 5}}>
+                                        <View style={{backgroundColor: '#ccc', width: 40, height: 40, borderRadius: 999}}></View>
+                                        <Text style={{color: '#666', marginLeft: 8,width:60}} numberOfLines={1} ellipsizeMode='middle'>{item.geval_frommembername}</Text>
+                                    </View>
+                                    <View style={{marginTop: 5, marginBottom: 5}}>
+                                        <Text style={{color: '#333'}} numberOfLines={2}>{item.geval_content}</Text>
+                                    </View>
+                                    <View style={{marginBottom: 5,flexDirection:'row',alignItems:'center'}}>
+                                        <Text style={{color: '#cdcdcd', fontSize: 13}}>颜色分类: </Text>
+                                        <Text style={{color: '#cdcdcd', fontSize: 13,width:80}} numberOfLines={1} ellipsizeMode='head'>{item.geval_goodsname}</Text>
+                                    </View>
+                                </View>
+                            );
+                        })
+                    }
                     <CommodityDisplay title={'您可能想要'}/>
                     <EmpityBox/>
                 </ScrollView>

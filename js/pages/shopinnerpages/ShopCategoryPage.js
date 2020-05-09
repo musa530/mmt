@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions, ScrollView, Image,TouchableOpacity,SectionList,Alert,FlatList,ImageBackground} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, ScrollView, Image,TouchableOpacity,SectionList,Alert,FlatList,RefreshControl,ActivityIndicator} from 'react-native';
 import ShopCateData from '../../../ShopCateData.json';
 import TempPage from './TempPage';
 
@@ -19,8 +19,50 @@ export default class ShopCategoryPage extends Component{
         this._sectionList = null
         this.state = {
             selectedRootCate: 0,
-            isPressed: false
+            isPressed: false,
+            store_id: this.props.store_id,
+            isRefreshing: true,
+            error: false,
+            errorInfo: '',
+            goods_class: []
         }
+    }
+
+    componentDidMount(){
+        let store_id = this.state.store_id
+        this._netFetch(store_id)
+    }
+
+    _netFetch = (store_id) => {
+        fetch(`https://satarmen.com/api/Store/store_goods_class?store_id=${store_id}`)
+        .then(response => response.json())
+        .then(res => {
+            let goods_class = res.result.store_goods_class
+            this.setState({
+                goods_class,
+                isRefreshing: false
+            })
+            goods_class = null
+        })
+        .catch(error => {
+            this.setState({
+                error: true,
+                errorInfo: error
+            })
+        })
+    }
+
+    renderRefresh = () => {
+        return (
+            <View style={{marginTop:60,alignItems:'center'}}>
+                <ActivityIndicator
+                    animating={true}
+                    color='blue'
+                    size="small"
+                />
+                   <Text>数据加载中...</Text>
+            </View>
+        );
     }
 
     componentDidUpdate(){
@@ -62,8 +104,8 @@ export default class ShopCategoryPage extends Component{
 
     renderRootCate(){//左侧根目录&一级类目
         let data = []
-        ShopCateData.data.map((item, index) => {
-            data.push({key: index, title: item.firstCateName, id: item.firstCateId})
+        this.state.goods_class.map((item, index) => {
+            data.push({key: index, title: item.value, id: item.id})
         })
         return(
             <View style={{backgroundColor:'#f5f5f5',height:listHeight}}>
@@ -81,53 +123,41 @@ export default class ShopCategoryPage extends Component{
         );
     }
 
-    sectionComp=(item)=>{//二级类目标题
+    sectionComp=(info)=>{//二级类目标题
+        // console.log(info)
         return(
             <TouchableOpacity 
                 style={{flex:1,backgroundColor:'#f7f7f7',justifyContent:'center',alignItems:'center',height:44}}
                 onPress={()=>{
-                    console.log(`点击了${item.section.key}`)
+                    Alert.alert(`点击了${info.item.key}`)
                 }}    
             >
-                <Text style={{color:'#711',marginBottom:10,marginTop:10}}>{item.section.key}</Text>
+                <Text style={{color:'#711',marginBottom:10,marginTop:10}}>{info.item.key}</Text>
             </TouchableOpacity>
         );
     }
 
-    renderItem = item => {
-        let secondIndex = item.section.data.sectionId;
-        let data = item.section.data
-        let key = item.section.key
-        let mallData = []
-        data.map((item, index) => {
-            mallData.push({
-                key: index, title: item.mallName, url: item.url, price: item.mallPrice
-            })
-        })
-        console.log(secondIndex,key,mallData)
-        return null
-    }
 
     renderItemCate(){//二级类目数组打包与使用SectionList展示
-        let tempArr = ShopCateData.data[this.state.selectedRootCate].secondCateItems.map((item, index) => {
+        let tempArr = this.state.goods_class[this.state.selectedRootCate].children.map((item, index) => {
             let tempObj = {}
-            tempObj.key = item.secondCateName//二级分类名称
-            tempObj.data = item.items///详细数据
-            tempObj.data.sectionId = index//索引(下标)
+            tempObj.key = item.value//二级分类名称
+            tempObj.id = item.id///详细数据
+            tempObj.index = index//索引(下标)
             return tempObj
         })
+        console.log(tempArr)
         return(
-            <View style={{flex:1,backgroundColor:'#f5f5f5'}}>
-                <SectionList
-                    ref={(ref) => this._sectionList = ref}
-                    renderSectionHeader={this.sectionComp}
-                    renderItem={(data)=>this.renderItem(data)}
-                    sections={tempArr}
-                    ItemSeparatorComponent={()=><View style={{height:1,backgroundColor:'#eee'}}/>}
-                    ListHeaderComponent={()=><View/>}
-                    ListFooterComponent={()=><View/>}
+            <View style={{flex:1,backgroundColor:'#f5f5f5',height: listHeight}}>
+                <FlatList
+                    ref={flatList => this._flatList = flatList}
+                    data={tempArr}
+                    ListHeaderComponent={()=>(<View />)}
+                    ListFooterComponent={()=>(<View />)}
+                    ItemSeparatorComponent={()=> <View style={{height:1,backgroundColor:'#f5f5f5'}}/>}
+                    renderItem={this.sectionComp}
+                    onEndReachedThreshold={20}
                     showsVerticalScrollIndicator={false}
-                    keyExtractor={(item, index) => 'key' + index + item}
                 />
             </View>
         );
@@ -135,7 +165,7 @@ export default class ShopCategoryPage extends Component{
 
     renderCategory=()=>{
         return(
-            <View style={{flex:1,flexDirection:'row',backgroundColor:'#f5f5f5'}}>
+            <View style={{flexDirection:'row',backgroundColor:'#f5f5f5'}}>
                 {this.renderRootCate()}
                 {this.renderItemCate()}
             </View>
@@ -144,10 +174,19 @@ export default class ShopCategoryPage extends Component{
 
     render(){
         const {isPressed} = this.state;
-        console.log(this.props)
+        if (this.state.isRefreshing && !this.state.error) {
+            return this.renderRefresh()
+        }
+        console.log(this.state.goods_class)
         return(
             <View style={styles.container}>
-                {this.renderCategory()}
+                {this.state.goods_class == '' ?
+                    <View style={{alignItems:'center',marginTop:50}}>
+                        <Text style={{color:'#cdcdcd'}}>暂没有相关分类~</Text>
+                    </View>
+                    :
+                    this.renderCategory()
+                }
                 {/* <TouchableOpacity
                     onPress={()=>{
                         this.props._setId(id)
@@ -163,6 +202,5 @@ export default class ShopCategoryPage extends Component{
 
 const styles = StyleSheet.create({
     container:{
-        flex:1,
     }
 });

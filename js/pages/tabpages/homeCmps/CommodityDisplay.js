@@ -71,7 +71,7 @@ export default class CommodityDisplay extends Component{
 	renderCell = info => {
 		// console.log(info)
 		return (
-			<View style={{flex:1,justifyContent:'space-between'}}>
+			<View style={{flex:1,justifyContent:'space-between',alignItems:'center'}}>
 				{this.renderMallItem(info)}
 			</View>
 		);

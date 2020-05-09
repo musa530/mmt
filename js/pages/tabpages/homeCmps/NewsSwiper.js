@@ -30,7 +30,7 @@ export default class NewsSwiper extends Component{
                 <Swiper style={styles.wrapper}
                     horizontal={false}
                     autoplay={true}
-                    autoplayTimeout={4}
+                    autoplayTimeout={3}
                     paginationStyle={styles.paginationStyle}
                     showsPagination={false}
                 >
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
         height: 40,
         backgroundColor: 'white',
         flexDirection: 'row',
+        alignItems:'baseline',
         marginTop: 10,
         marginLeft: 8,
         marginRight: 10,
@@ -67,8 +68,8 @@ const styles = StyleSheet.create({
         fontSize:16
     },
     newsText:{
-        height:40,
-        lineHeight:20,
-        color:'#333'
+        color:'#333',
+        fontSize:11,
+        letterSpacing:0
     }
 });

@@ -20,7 +20,8 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                topTitle: '折扣专区'
+                                topTitle: '折扣专区',
+                                page_id:0
                             }, "ActivePage")
                         }}
                     >
@@ -36,7 +37,8 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                topTitle: '限时秒杀'
+                                topTitle: '限时秒杀',
+                                page_id:1
                             }, "ActivePage")
                         }}
                     >
@@ -51,7 +53,8 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                topTitle: '神券专区'
+                                topTitle: '神券专区',
+                                page_id:2
                             }, "ActivePage")
                         }}    
                     >
@@ -67,7 +70,8 @@ export default class NavigationBar extends Component{
                         onPress={()=>{
                             NavigationUtil.goPage({
                                 navigation: this.props.navigation,
-                                topTitle: '新疆商城自营超市'
+                                store_id: 1,
+                                store_name: '新疆商城自营超市'
                             }, "ShopPage")
                         }}
                     >

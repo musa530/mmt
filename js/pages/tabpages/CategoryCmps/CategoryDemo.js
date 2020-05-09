@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Image, Text, TouchableOpacity, StyleSheet, FlatList, SectionList, Dimensions} from 'react-native';
+import {View, Image, Text, TouchableOpacity, StyleSheet, FlatList, SectionList, Dimensions, ScrollView,ActivityIndicator} from 'react-native';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -14,26 +14,55 @@ export default class CategoryDemo extends Component {
       this._sectionList = null
       this.state = {
         selectedRootCate: 0,
-        CateData: []
+        error: false,
+        errorInfo:'',
+        class_list:[],
+        isLoading:true,
       }
     }
 
     componentDidMount() {
-        this.fetchData()
+      this.fetchData()
     }
 
     fetchData() {
-        fetch('http://localhost:8081/CategoryData.json')
-            .then((response)=> response.json())
-            .then((responseJson) => {
-                this.setState({
-                    CateData: responseJson
-                })
-            })
-            .catch(error => {
-                error && console.log(error.toString());
-            })
-            .done();
+      fetch('https://satarmen.com/api/Goodsclass/index')
+      .then((response)=> response.json())
+      .then((res) => {
+        // console.log(res.result)
+        let class_list = res.result.class_list
+        
+
+        this.setState({
+          isLoading: false,
+          class_list,
+        })
+
+        class_list = null
+      })
+      .catch(error => {
+        this.setState({
+          error:true,
+          errorInfo: error
+        })
+      })
+      .done();
+    }
+
+    renderLoading(){
+      return(
+        <View>
+          {this.renderNavBar()}
+          <View style={{marginTop:60,alignItems:'center'}}>
+            <ActivityIndicator
+              animating={true}
+              color='blue'
+              size="small"
+            />
+            <Text>数据加载中...</Text>
+          </View>
+        </View>
+      )
     }
   
     renderNavBar() {//页面头部
@@ -50,24 +79,24 @@ export default class CategoryDemo extends Component {
         return (
           <TouchableOpacity
             key={index}
-            style={[{alignItems: 'center', justifyContent: 'center', width: leftList, height: 44}, this.state.selectedRootCate === index ? {backgroundColor: '#F5F5F5', borderLeftWidth: 3, borderLeftColor: 'red'} : {backgroundColor: 'white'}]}
+            style={[{alignItems: 'center', justifyContent: 'center', width: leftList, height: 47.5}, this.state.selectedRootCate === index ? {backgroundColor: '#F5F5F5', borderLeftWidth: 3, borderLeftColor: 'red'} : {backgroundColor: 'white'}]}
             onPress={() => {
-              setTimeout(() => {
-                (CateData.data.length - index) * 45 > height - 40 ? this._flatList.scrollToOffset({animated: true, offset: index * 45}) : null
-                this._sectionList.scrollToLocation({itemIndex: 0, sectionIndex: 0, animated: true, viewOffset: 20})
-              }, 100)
+              // setTimeout(() => {
+              //   (CateData.data.length - index) * 45 > height - 40 ? this._flatList.scrollToOffset({animated: true, offset: index * 45}) : null
+              //   this._sectionList.scrollToLocation({itemIndex: 0, sectionIndex: 0, animated: true, viewOffset: 20})
+              // }, 100)
               this.setState({selectedRootCate: index})
             }}
           >
-            <Text style={{fontSize: 13, color: this.state.selectedRootCate === index ? 'red' : '#333'}}>{title}</Text>
+            <Text style={{fontSize: 13,textAlign:'center', color: this.state.selectedRootCate === index ? 'red' : '#333'}} numberOfLines={3}>{title}</Text>
           </TouchableOpacity>
         )
       }
     
       renderRootCate() {//左侧根分类
         let data = []
-        CateData.data.map((item, index) => {
-          data.push({key: index, title: item.firstCateName, id: item.firstCateId})
+        this.state.class_list.map((item, index) => {
+          data.push({key: index, title: item.value, id: item.id})
         })
         return (
           <View style={{backgroundColor: '#F5F5F5'}}>
@@ -87,23 +116,11 @@ export default class CategoryDemo extends Component {
       }
     
       sectionComp(item) {//sectionHeader二级分类名称
+        // console.log(item)
         return (
-          <View style={{backgroundColor: '#F5F5F5', justifyContent: 'center'}}>
-            <Text style={{color: '#711', marginBottom: 8}}>{item.section.key}</Text>
+          <View style={{backgroundColor: '#F5F5F5', justifyContent: 'center',alignItems:'center',marginTop:8,borderBottomColor:'#8a8a8a',borderBottomWidth:1,marginBottom:3}}>
+            <Text style={{color: '#f00', marginBottom: 3,fontSize:15,fontWeight:'bold'}}>{item.section.value}</Text>
           </View>
-        )
-      }
-    
-      renderCell(item, sectionIndex, index) {//单元格详细
-        return (
-          <TouchableOpacity
-            key={index}
-            style={{height: 110, width: (width - 160) / 3, backgroundColor: 'white', marginBottom: 8, marginRight: 10, alignItems: 'center'}}
-            onPress={() => alert(`点击了第${sectionIndex+1}组中的第${index+1}个商品`)}
-          >
-            <Image style={{width: 60, height: 70, marginVertical: 10}} source={{uri: item.itemImg}}/>
-            <Text style={{color: '#ccc', fontSize: 13}}>{item.title}</Text>
-          </TouchableOpacity>
         )
       }
     
@@ -111,37 +128,52 @@ export default class CategoryDemo extends Component {
         let sectionIndex = item.section.data.sectionId
         let data = item.section.data
         return item.index === 0 ?
-          <View key={item.index} style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-            {data.map((cell, index) => this.renderCell(cell, sectionIndex, index))}
+          <View key={item.index} style={{flexDirection: 'row', flexWrap: 'wrap',width: width - leftList}}>
+            {data.map((cell, index) => {
+              return <TouchableOpacity
+              key={index}
+              style={{height: 110, width: (width - 150) / 3, marginBottom: 8, marginRight: 10, alignItems: 'center'}}
+              onPress={() => alert(`点击了第${sectionIndex+1}组中的第${index+1}个商品`)}
+            >
+              <Image style={{width: 60, height: 70, marginVertical: 10}} source={{uri: `https://satarmen.com/uploads/home/common/category-pic-${cell.id}.jpg`}}/>
+              <Text style={{color: '#333', fontSize: 13}}>{cell.value}</Text>
+            </TouchableOpacity>
+            })}
           </View> : null
       }
     
-      renderItemCate() {//重组右侧分类数据
-        let tempArr = CateData.data[this.state.selectedRootCate].secondCateItems.map((item, index) => {
+      renderItemCate = () => {//重组右侧分类数据
+        let class_list = this.state.class_list
+        // console.log(class_list)
+        let tempArr = class_list[this.state.selectedRootCate].children.map((item, index) => {
           let tempObj = {}
-          tempObj.key = item.secondCateName//二级分类名称
-          tempObj.data = item.items///详细数据
-          tempObj.data.sectionId = index//索引(下标)
+          tempObj.value = item.value
+          tempObj.id = item.id
+          tempObj.data = item.children
+          tempObj.data.sectionId = index
           return tempObj
         })
-        return (
-          <View style={{flex: 1, backgroundColor: '#F5F5F5', marginLeft: 10, marginTop: 8}}>
+        
+        // console.log(tempArr)
+        return(
+          <View style={{marginLeft:5}}>
             <SectionList
-              ref={(ref) => this._sectionList = ref}
               renderSectionHeader={this.sectionComp}
-              renderItem={(data) => this.renderItem(data)}
               sections={tempArr}
-              ItemSeparatorComponent={() => <View/>}
+              renderItem={this.renderItem}
               ListHeaderComponent={() => <View/>}
-              ListFooterComponent={() => <View/>}
-              showsVerticalScrollIndicator={false}
+              ListFooterComponent={()=><View style={{height:20}}/>}
+              ItemSeparatorComponent={()=><View/>}
               keyExtractor={(item, index) => 'key' + index + item}
             />
           </View>
-        )
+        );
+            
+            
       }
     
       renderCategory() {
+        
         return (
           <View style={{flexDirection: 'row', flex: 1, backgroundColor: '#F5F5F5'}}>
             {this.renderRootCate()}
@@ -151,13 +183,16 @@ export default class CategoryDemo extends Component {
       }
     
       render() {
-            return (
-            <View style={styles.container}>
-                {this.renderNavBar()}
-                {this.renderCategory()}
-            </View>
-            )
+        if(this.state.isLoading && !this.state.error){
+          return this.renderLoading()
         }
+        return (
+          <View style={styles.container}>
+            {this.renderNavBar()}
+            {this.renderCategory()}
+          </View>
+        )
+      }
   }
   
   const styles = StyleSheet.create({

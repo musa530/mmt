@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, RefreshControl} from 'react-native';
+import {View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, RefreshControl, TextInput,ImageBackground} from 'react-native';
 import Circle from './homeCmps/Circle';
 import NavigationUtil from '../../AppNavigator/NavigationUtil';
 import Toast from '../../AppNavigator/ToastDemo'
+import SignIn from '../SignIn'
 
 const {width, height} = Dimensions.get('window');
 const settingIcon = width - 40;
@@ -13,7 +14,8 @@ export default class Profile extends Component{
     constructor(props){
         super(props);
         this.state = {
-            refreshing: false
+            refreshing: false,
+            hasToken: false
         }
     }
 
@@ -22,10 +24,15 @@ export default class Profile extends Component{
         return(
             <View style={styles.container}>
                 {/* 页眉布局 */}
-                <View style={{height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', width: width}}>
-                    <Text style={{marginTop: 5, color: 'white', fontSize: 16}}>个人中心</Text>
-                </View>
-                <ProfileCmps/>
+                {/* {this.state.hasToken ?  */}
+                    <View>
+                        <View style={{height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', width: width}}>
+                            <Text style={{marginTop: 5, color: 'white', fontSize: 16}}>个人中心</Text>
+                        </View>
+                        <ProfileCmps/>
+                    </View>
+                    
+                
             </View>
         );
     }
@@ -37,7 +44,8 @@ class ProfileCmps extends Component {
         this.state = {
             user_name: 'Free·z Z',
             user_id: 'wx_99456125',
-            money: '1000.00'
+            money: '1000.00',
+            hasToken: false
         }
     }
 
@@ -56,23 +64,39 @@ class ProfileCmps extends Component {
 
                 {/* 用户信息布局 */}
                 <View style={{top: 10, left: 15, flexDirection: 'row', alignItems: 'center'}}>
-                    <Image source={require('../../../assest/images/mall/mall1.jpg')}
-                        style={{width: 65, height: 65, borderRadius: 999, borderWidth: 1, borderColor: '#333'}}
-                        resizeMode= 'cover'
-                    />
-                    <View>
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={{fontSize: 20, marginLeft: 12, color: 'white'}}>{this.state.user_name}</Text>
+                    {this.state.hasToken ?
+                        <View>
+                            <Image source={require('../../../assest/images/mall/mall1.jpg')}
+                                style={{width: 65, height: 65, borderRadius: 999, borderWidth: 1, borderColor: '#333'}}
+                                resizeMode= 'cover'
+                            />
+                            <View>
+                                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                    <Text style={{fontSize: 20, marginLeft: 12, color: 'white'}}>{this.state.user_name}</Text>
 
-                            <View style={{flexDirection: 'row', alignItems: 'center', backgroundColor: '#333',padding: 2,marginLeft: 3, borderRadius: 8}}>
-                                <Image source={require('../../../assest/images/level.png')}
-                                    style={{width: 15,height: 15}}
-                                />
-                                <Text style={{color: 'white',fontSize: 12}}>白金</Text>
+                                    <View style={{flexDirection: 'row', alignItems: 'center', backgroundColor: '#333',padding: 2,marginLeft: 3, borderRadius: 8}}>
+                                        <Image source={require('../../../assest/images/level.png')}
+                                            style={{width: 15,height: 15}}
+                                        />
+                                        <Text style={{color: 'white',fontSize: 12}}>白金</Text>
+                                    </View>
+                                </View>
+                                <Text style={{fontSize: 14, marginLeft: 8, marginTop: 10, color: '#cdcdcd'}}>会员ID：{this.state.user_id}</Text>
                             </View>
                         </View>
-                        <Text style={{fontSize: 14, marginLeft: 8, marginTop: 10, color: '#cdcdcd'}}>会员ID：{this.state.user_id}</Text>
-                    </View>
+                        :
+                        <TouchableOpacity 
+                            style={{marginVertical:25,marginLeft:15}}
+                            onPress={() => {
+                                NavigationUtil.goPage({
+                                    navigation: this.props.navigation,
+                                },"SignIn")
+                            }}
+                        >
+                            <Text style={{color:'#fff',fontSize:25}}>登录/注册</Text>
+                        </TouchableOpacity>
+                    }
+                    
                 </View>
                 
             </View>
@@ -269,7 +293,11 @@ class ProfileCmps extends Component {
                 </View></TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => Toast.show('正在开发中...')}
+                    onPress={() => {
+                        NavigationUtil.goPage({
+                            navigation: this.props.navigation
+                        },"TiXian")
+                    }}
                 >
                 <View style={{alignItems: 'center', width: itemWidth, marginBottom: 15}}>
                     <Image style={{width: iconWidth, height: iconWidth, marginBottom: 8}} source={require('../../../assest/images/tixian.png')}/>
@@ -455,6 +483,7 @@ class ProfileCmps extends Component {
 
     render () {
         const {refreshing} = this.state
+        // NavigationUtil.navigation = this.props.navigation;
         return (
             <View style={styles.content}>
                 
